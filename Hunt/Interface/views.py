@@ -7,6 +7,7 @@ from Interface import Interface
 from .models import HuntUser, HuntCommand
 
 
+
 def index(request):
     return render(request, 'index.html', {"message":""})
 
