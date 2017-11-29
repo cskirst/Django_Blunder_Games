@@ -1,10 +1,10 @@
 {% load staticfiles %}
 <link rel="stylesheet" type="text/css" href="{% static 'Interface/style.css' %}" />
-User: {{ huntUser }}<br/>
+User: {{ User }}<br/>
 Output of last command: {{output}}
 <form method="post" action="/terminal/">{% csrf_token %}
     Command: <input type="text" size="20" id="command" name="command"/><br/>
-    <input type="hidden" size="20" id="huntUser" name="huntUser" value="{{ huntUser }}" /><br/>
+    <input type="hidden" size="20" id="User" name="User" value="{{ User }}" /><br/>
     <input type="submit"/>
 </form>
 <a href="/">log out</a>

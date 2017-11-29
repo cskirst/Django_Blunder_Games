@@ -23,7 +23,7 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.CreateModel(
-            name='HuntUser',
+            name='User',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=20)),
@@ -33,6 +33,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='huntcommand',
             name='user',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='Interface.HuntUser'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='Interface.User'),
         ),
     ]

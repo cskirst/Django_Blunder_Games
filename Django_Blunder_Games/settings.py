@@ -50,7 +50,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'Hunt.urls'
+ROOT_URLCONF = 'Django_Blunder_Games.urls'
 
 TEMPLATES = [
     {
@@ -69,7 +69,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'Hunt.wsgi.application'
+WSGI_APPLICATION = 'Django_Blunder_Games.wsgi.application'
 
 
 # Database

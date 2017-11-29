@@ -11,6 +11,6 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "Hunt.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "Django_Blunder_Games.settings")
 
 application = get_wsgi_application()
