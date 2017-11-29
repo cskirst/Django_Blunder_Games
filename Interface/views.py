@@ -34,6 +34,6 @@ def terminal(request):
     c = HuntCommand(text=request.POST["command"],user=u,timestamp=timezone.now())
     c.save()
     output = i.process(request.POST["command"])
-    context = {"huntUser":request.POST["User"],"output":output}
+    context = {"User":request.POST["User"],"output":output}
     return render(request, "terminal.html", context)
 
