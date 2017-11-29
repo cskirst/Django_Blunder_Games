@@ -1,8 +1,5 @@
 ﻿import unittest
-import system
-import user
-import game
-import landmarks
+from .models import User, Landmarks, Game
 
 
 class Controller:
