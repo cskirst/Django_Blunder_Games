@@ -6,7 +6,6 @@ class Controller:
     def __init__(self):
         self.currentUser = None
         self.Game = None
-        self.System = system.System()
 
     def check(self, parsedText):  # where parsedText is a list of strings
         # if user=None, don't accept any method except login
@@ -91,7 +90,7 @@ class Controller:
             return
         lmstrings = landmark.split(",")
         tmstrings = teams.split(",")
-        self.Game = game.Game(self.System)
+        self.Game = Game(self.System)
         lm = []
         for l in lmstrings:
             returnedLandmark = self.System.getLandmark(l)
@@ -117,7 +116,7 @@ class Controller:
         # only accessible if game maker. This method calls startClock() in Game class
         if (self.currentUser == "admin"):
             if self.Game == None:
-              self.Game = game.Game(self.System)
+              self.Game = Game(self.System)
               print("Game started")
             if self.Game.isActive:
               print("There is already an active game")
@@ -145,7 +144,7 @@ class Controller:
         if name == "" or clue == "" or question == "" or answer == "":
             print("Invalid landmark argument(s)")
             return
-        landmark = landmarks.Landmarks(name, clue, question, answer)
+        landmark = Landmarks(name, clue, question, answer)
         self.System.addLandmark(landmark)
         print("Landmark created")
 
@@ -176,11 +175,11 @@ class Controller:
           print('Incorrect answer, try again.')
                 # Eventually add penalty.
                 # if answer is correct: automatically provide next clue, increments currentLandmark if correct
-
+'''
 class TestAcceptanceLogin(unittest.TestCase):
     def setUp(self):
         self.con = Controller()
-        self.Interface = interface.Interface()
+        self.Interface = Interface()
     def test_NormalLogin(self):
         self.Interface.command("LOGIN admin kittens")
         self.assertEqual(self.con.currentUser, "admin", "Current user is not admin")
@@ -370,5 +369,5 @@ class TestEndGame(unittest.TestCase):
     def test_endGameOnAlreadyEndedGame(self):
         self.Game.isActive = False
         self.con.end_game()
-        self.assertFalse(self.Game.isActive, "End game on a non-active game should stay non-active")
+        self.assertFalse(self.Game.isActive, "End game on a non-active game should stay non-active")'''
         
