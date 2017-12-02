@@ -7,6 +7,7 @@ class Game(models.Model):
         return self.name
     def checkIfWin(self, x):
         #TODO
+        pass
     def toggleActive(self):
         if (self.isActive):
         ##THE ~FUTURE~  self.stopClock()
