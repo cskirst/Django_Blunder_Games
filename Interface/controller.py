@@ -7,7 +7,7 @@ class Controller:
         self.currentUser = None
         self.Game = None
 
-    def check(self, parsedText):  # where parsedText is a list of strings
+    def check(self, parsedText, user):  # where parsedText is a list of strings
         # if user=None, don't accept any method except login
         # elif tree of different methods depending on first index of parsedText
         # a = eval('A')

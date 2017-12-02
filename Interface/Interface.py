@@ -6,4 +6,4 @@ class Interface:
         self.c = Controller()
 
     def process(self, s, user):
-        self.c.check(s)
+        self.c.check(s, user)
