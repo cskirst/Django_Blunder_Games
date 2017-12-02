@@ -44,6 +44,10 @@ class Landmarks(models.Model):
     answer = models.CharField(max_length=1000)
     game = models.ForeignKey(Game)
     position = models.IntegerField()
+
+    class Meta:
+        verbose_name_plural = "Landmarks"
+        
     def __str__(self):
         return self.name
 
