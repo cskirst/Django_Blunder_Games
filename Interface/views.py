@@ -4,8 +4,7 @@ from django.urls import reverse
 import datetime
 from django.utils import timezone
 from Interface import Interface
-from .models import User, HuntCommand
-
+from .models import HuntUser, HuntCommand
 
 
 def index(request):
@@ -15,14 +14,14 @@ def validate(request):
 
     message = "XXX"
     try:
-        u = User.objects.get(name=request.POST["User"])
-    except User.DoesNotExist:
-        message = "No user named " + request.POST["User"]
+        u = HuntUser.objects.get(name=request.POST["huntUser"])
+    except HuntUser.DoesNotExist:
+        message = "No user named " + request.POST["huntUser"]
     else:
         if u.password != request.POST["password"]:
             message = "Invalid password"
     if message == "XXX":
-        context = {"User": request.POST["User"]}
+        context = {"huntUser": request.POST["huntUser"]}
         return render(request,"terminal.html",context)
     else:
         return render(request,"index.html",{"message":message})
@@ -30,10 +29,10 @@ def validate(request):
 
 def terminal(request):
     i = Interface.Interface()
-    u = User.objects.get(name=request.POST["User"])
+    u = HuntUser.objects.get(name=request.POST["huntUser"])
     c = HuntCommand(text=request.POST["command"],user=u,timestamp=timezone.now())
     c.save()
-    output = i.process(request.POST["command"])
-    context = {"User":request.POST["User"],"output":output}
+    output = i.process(request.POST["command"],request.POST["huntUser"])
+    context = {"huntUser":request.POST["huntUser"],"output":output}
     return render(request, "terminal.html", context)
 

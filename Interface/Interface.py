@@ -5,5 +5,5 @@ class Interface:
     def __init__(self):
         self.c = Controller()
 
-    def process(self, s):
+    def process(self, s, user):
         self.c.check(s)
