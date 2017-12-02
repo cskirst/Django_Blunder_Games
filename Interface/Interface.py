@@ -6,4 +6,6 @@ class Interface:
         self.c = Controller()
 
     def process(self, s, user):
-        self.c.check(s, user)
+        if s is not None:
+            commandList = s.split()
+            self.c.check(commandList, user)
