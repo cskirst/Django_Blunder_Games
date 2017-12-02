@@ -1,5 +1,11 @@
 from django.db import models
 
+class Game(models.Model):
+    isActive = models.BooleanField(default=False)
+    name = models.CharField(max_length=100)
+    def __str__(self):
+        return self.name
+
 class User(models.Model):
     name = models.CharField(max_length=40)
     password = models.CharField(max_length=40)
@@ -14,12 +20,6 @@ class Landmarks(models.Model):
     question = models.CharField(max_length=1000)
     answer = models.CharField(max_length=1000)
     game = models.ForeignKey(Game)
-    def __str__(self):
-        return self.name
-
-class Game(models.Model):
-    isActive = models.BooleanField(default=False)
-    name = models.CharField(max_length=100)
     def __str__(self):
         return self.name
 
