@@ -30,13 +30,14 @@ class Controller:
         elif command == 'LOGOUT':
           self.logout()
         '''
-        if command == 'START':
-          self.start_game()
-        #first command is create, can create a game, landmark, user.
-        elif command == 'CREATE':
+        if command == 'CREATE':
           if parsedText[1].upper() == 'GAME':
             return self.create_game(parsedText[2])
+          elif self.Game == None:
+            return "There is no active game"
           elif parsedText[1].upper() == 'LANDMARK':
+            if len(parsedText)!=8:
+                return "Bad landmark credentials"
             self.create_landmark(parsedText[2], parsedText[3], parsedText[4], parsedText[5], parsedText[6], parsedText[7])
           elif parsedText[1].upper() == 'USER':
             if len(parsedText)!=5:
@@ -44,6 +45,10 @@ class Controller:
             return self.create_team(parsedText[2], parsedText[3], parsedText[4])
           else:
             print("Invalid command")
+        elif self.Game==None:
+          return "There is no active game"
+        elif command == 'START':
+          self.start_game()
         elif command == 'END':
           self.end_game()
         #User calls
@@ -78,17 +83,17 @@ class Controller:
         if self.currentUser is None:
           if self.System.getTeamPassword(username) == password:
             self.currentUser = username
-            print("Successfully logged in")
+            return "Successfully logged in"
           else:
-            print("Username or password is incorrect")
+            return "Username or password is incorrect"
         else:
-          print('Another user is currently logged in.')
+          return "Another user is currently logged in."
     def logout(self):
         if self.currentUser == None:
-          print("No user is logged in")
+          return "No user is logged in"
         else:
           self.currentUser = None
-          print("User logged out")
+          return "User logged out"
 
     def create_game(self, name):
         # instantiates new game object and calls setLandmarkList & setTeams in Game class. Current user is admin
@@ -144,29 +149,26 @@ class Controller:
         # only accessible if game maker
         if (self.currentUser == "admin"):
             if not self.Game.isActive:
-              print("There is no active game")
+              return "There is no active game"
             else:
               self.Game.toggleActive()
-            # more?
+              return "Game ended"
         else:
-            print("Cannot end game if not game maker")
-        pass  # TODO
+            return "Cannot end game if not game maker"
 
     def create_landmark(self, name, clue, question, answer, gamename, position):
         if self.currentUser != "admin":
-            print("Must be admin to create landmark")
-            return
+            return "Must be admin to create landmark"
         if name == "" or clue == "" or question == "" or answer == "" or gamename=="" or position==None:
-            print("Invalid landmark argument(s)")
-            return
+            return "Invalid landmark argument(s)"
         g = Game.objects.get(name=gamename)
         l = Landmarks(name=name, clue=clue, question=question, answer=answer,game=g, position=position)
         l.save()
-        return HttpResponse("Landmark created")
+        return "Landmark created"
 
     def create_team(self, username, password, gamename):
       if self.currentUser != "admin":
-          return HttpResponse("Must be admin to create landmark")
+          return "Must be admin to create landmark"
       if username == "" or password == "" or username =='admin' or gamename=="":
         return "Invalid team credentials."
       try:
@@ -175,8 +177,7 @@ class Controller:
         return "Game not found"
       t = User(name=username, password=password, currentLandmark=0, game=g)
       t.save()
-      content = "team created"
-      return HttpResponse(content)
+      return "Team created"
 
       
     def answer_question(self, answer, team):
@@ -186,13 +187,12 @@ class Controller:
           team.currentLandmark += 1
                 # need to be able to print the clue
           if self.Game.checkIfWin(team.currentLandmark) == True:
-            print('You win!')
-            return
+            return 'You win!'
           else:
             print('Your next clue is: ')
             print(self.Game.landmarkList[team.currentLandmark].getClue())
         else:
-          print('Incorrect answer, try again.')
+          return "Incorrect answer, try again."
                 # Eventually add penalty.
                 # if answer is correct: automatically provide next clue, increments currentLandmark if correct
     #def createlandmarklist(self, gamename):
