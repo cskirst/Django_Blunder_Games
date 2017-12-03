@@ -7,7 +7,7 @@ class Controller:
     def __init__(self):
         self.currentUser = None
         self.Game = None
-        self.LandmarkList = None
+        self.LandmarkList = []
 
     def check(self, parsedText, user):  # where parsedText is a list of strings
         # if user=None, don't accept any method except login
@@ -15,7 +15,10 @@ class Controller:
         # a = eval('A')
         self.currentUser = user
         command = parsedText[0].upper() # commands should be toUpper
-        #createlandmarklist(gamename)
+        userobj = User.objects.get(name=self.currentUser)
+        if self.currentUser != "admin":
+            self.Game = getattr(userobj , 'game')
+            self.createlandmarklist()
         '''
         if self.Game != None:
           team = None
@@ -33,26 +36,24 @@ class Controller:
         if command == 'CREATE':
           if parsedText[1].upper() == 'GAME':
             return self.create_game(parsedText[2])
-          elif self.Game == None:
-            return "There is no active game"
           elif parsedText[1].upper() == 'LANDMARK':
             if len(parsedText)!=8:
                 return "Bad landmark credentials"
-            self.create_landmark(parsedText[2], parsedText[3], parsedText[4], parsedText[5], parsedText[6], parsedText[7])
+            return self.create_landmark(parsedText[2], parsedText[3], parsedText[4], parsedText[5], parsedText[6], parsedText[7])
           elif parsedText[1].upper() == 'USER':
             if len(parsedText)!=5:
                 return "Bad user credentials"
             return self.create_team(parsedText[2], parsedText[3], parsedText[4])
           else:
             print("Invalid command")
-        elif self.Game==None:
-          return "There is no active game"
         elif command == 'START':
           self.start_game()
         elif command == 'END':
           self.end_game()
         #User calls
         elif command == 'ANSWER' and parsedText[1].upper() == 'QUESTION':
+          if self.Game==None:
+              return "There is no current game"
           j=2
           newAnswer = ""
           for i in range(2,(len(parsedText))):
@@ -67,11 +68,17 @@ class Controller:
             self.Game.toggleActive()
           '''
         elif command == 'GET' and parsedText[1].upper() == 'STATUS':
+          if self.Game==None:
+              return "There is no current game"
           team.get_status()
         elif command == 'GET' and parsedText[1].upper() == 'CLUE':
-          return(self.Game.landmarkList[team.currentLandmark].getClue())
+          if self.Game==None:
+              return "There is no current game"
+          return(self.LandmarkList[team.currentLandmark].getClue())
 
         elif command == 'GET' and parsedText[1].upper() == 'QUESTION':
+          if self.Game==None:
+              return "There is no current game"
           return(self.Game.landmarkList[team.currentLandmark].getQuestion())
         else:
           return('Invalid command.')
@@ -161,9 +168,13 @@ class Controller:
             return "Must be admin to create landmark"
         if name == "" or clue == "" or question == "" or answer == "" or gamename=="" or position==None:
             return "Invalid landmark argument(s)"
-        g = Game.objects.get(name=gamename)
+        try:
+            g = Game.objects.get(name=gamename)
+        except Game.DoesNotExist:
+            return "Game not found"
         l = Landmarks(name=name, clue=clue, question=question, answer=answer,game=g, position=position)
         l.save()
+        self.LandmarkList.append(l)
         return "Landmark created"
 
     def create_team(self, username, password, gamename):
@@ -195,9 +206,12 @@ class Controller:
           return "Incorrect answer, try again."
                 # Eventually add penalty.
                 # if answer is correct: automatically provide next clue, increments currentLandmark if correct
-    #def createlandmarklist(self, gamename):
-     #   list = Landmarks.objects.filter(game = gamename)
-      #  newlist = sorted(list, )
+    def createlandmarklist(self):
+        if self.Game==None:
+            return
+        list = Landmarks.objects.filter(game = self.Game.name).order_by('position')
+        self.LandmarkList = list
+        return
 
 
 
