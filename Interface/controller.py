@@ -35,11 +35,13 @@ class Controller:
         #first command is create, can create a game, landmark, user.
         elif command == 'CREATE':
           if parsedText[1].upper() == 'GAME':
-            self.create_game(parsedText[2])
+            return self.create_game(parsedText[2])
           elif parsedText[1].upper() == 'LANDMARK':
-            self.create_landmark(parsedText[2], parsedText[3], parsedText[4], parsedText[5])
+            self.create_landmark(parsedText[2], parsedText[3], parsedText[4], parsedText[5], parsedText[6], parsedText[7])
           elif parsedText[1].upper() == 'USER':
-            self.create_team(parsedText[2], parsedText[3])
+            if len(parsedText)!=5:
+                return "Bad user credentials"
+            return self.create_team(parsedText[2], parsedText[3], parsedText[4])
           else:
             print("Invalid command")
         elif command == 'END':
@@ -121,7 +123,7 @@ class Controller:
               password = self.System.getTeamPassword(t)
               self.Game.addTeamToGame(t, password)
         '''
-        return HttpResponse("Game created!")
+        return "Game created!"
         
 
 
@@ -150,23 +152,28 @@ class Controller:
             print("Cannot end game if not game maker")
         pass  # TODO
 
-    def create_landmark(self, name, clue, question, answer):
+    def create_landmark(self, name, clue, question, answer, gamename, position):
         if self.currentUser != "admin":
             print("Must be admin to create landmark")
             return
-        if name == "" or clue == "" or question == "" or answer == "":
+        if name == "" or clue == "" or question == "" or answer == "" or gamename=="" or position==None:
             print("Invalid landmark argument(s)")
             return
-        landmark = Landmarks(name, clue, question, answer)
-        self.System.addLandmark(landmark)
-        print("Landmark created")
+        g = Game.objects.get(name=gamename)
+        l = Landmarks(name=name, clue=clue, question=question, answer=answer,game=g, position=position)
+        l.save()
+        return HttpResponse("Landmark created")
 
-    def create_team(self, username, password):
+    def create_team(self, username, password, gamename):
       if self.currentUser != "admin":
           return HttpResponse("Must be admin to create landmark")
-      if username == "" or password == "" or username =='admin':
-        return HttpResponse("Invalid team credentials.")
-      t = User(name=username, password=password, currentLandmark=0, game=self.Game)
+      if username == "" or password == "" or username =='admin' or gamename=="":
+        return "Invalid team credentials."
+      try:
+        g = Game.objects.get(name=gamename)
+      except Game.DoesNotExist:
+        return "Game not found"
+      t = User(name=username, password=password, currentLandmark=0, game=g)
       t.save()
       content = "team created"
       return HttpResponse(content)
