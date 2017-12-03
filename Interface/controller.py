@@ -1,17 +1,22 @@
 ﻿import unittest
 from .models import User, Landmarks, Game
+from django.http import HttpResponse
 
 
 class Controller:
     def __init__(self):
         self.currentUser = None
         self.Game = None
+        self.LandmarkList = None
 
     def check(self, parsedText, user):  # where parsedText is a list of strings
         # if user=None, don't accept any method except login
         # elif tree of different methods depending on first index of parsedText
         # a = eval('A')
+        self.currentUser = user
         command = parsedText[0].upper() # commands should be toUpper
+        #createlandmarklist(gamename)
+        '''
         if self.Game != None:
           team = None
           i = 0
@@ -19,16 +24,18 @@ class Controller:
             if self.currentUser == self.Game.teams[i].getName():
               team = self.Game.teams[i]
               break
+        
         if command == 'LOGIN':
           self.login(parsedText[1], parsedText[2])
         elif command == 'LOGOUT':
           self.logout()
-        elif command == 'START':
+        '''
+        if command == 'START':
           self.start_game()
         #first command is create, can create a game, landmark, user.
         elif command == 'CREATE':
           if parsedText[1].upper() == 'GAME':
-            self.create_game(parsedText[2], parsedText[3])
+            self.create_game(parsedText[2])
           elif parsedText[1].upper() == 'LANDMARK':
             self.create_landmark(parsedText[2], parsedText[3], parsedText[4], parsedText[5])
           elif parsedText[1].upper() == 'USER':
@@ -47,19 +54,20 @@ class Controller:
           newAnswer = newAnswer.rstrip()
           self.answer_question(newAnswer, team)
           #if that answer is the last one, game ends they win
+          '''
           if team.currentLandmark > len(self.Game.landmarkList):
             print('You win!')
             self.Game.toggleActive()
-
+          '''
         elif command == 'GET' and parsedText[1].upper() == 'STATUS':
           team.get_status()
         elif command == 'GET' and parsedText[1].upper() == 'CLUE':
-          print(self.Game.landmarkList[team.currentLandmark].getClue())
+          return(self.Game.landmarkList[team.currentLandmark].getClue())
 
         elif command == 'GET' and parsedText[1].upper() == 'QUESTION':
-         print(self.Game.landmarkList[team.currentLandmark].getQuestion())
+          return(self.Game.landmarkList[team.currentLandmark].getQuestion())
         else:
-          print('Invalid command.')
+          return('Invalid command.')
         
         
     # def getInstance(self):
@@ -80,11 +88,15 @@ class Controller:
           self.currentUser = None
           print("User logged out")
 
-    def create_game(self, landmark, teams):
+    def create_game(self, name):
         # instantiates new game object and calls setLandmarkList & setTeams in Game class. Current user is admin
         if self.currentUser != "admin":
             print("Cannot create game if not game maker")
             return
+        g = Game(name=name,isActive=False)
+        g.save()
+        self.Game=g
+        '''
         if landmark is None or teams is None:
             print("Landmarks or teams must not be null: Needs to be in format: landmark1,landmark2 teamA,teamB")
             return
@@ -108,7 +120,8 @@ class Controller:
             else:
               password = self.System.getTeamPassword(t)
               self.Game.addTeamToGame(t, password)
-        print("Game created!")
+        '''
+        return HttpResponse("Game created!")
         
 
 
@@ -150,13 +163,13 @@ class Controller:
 
     def create_team(self, username, password):
       if self.currentUser != "admin":
-          print("Must be admin to create landmark")
-          return
+          return HttpResponse("Must be admin to create landmark")
       if username == "" or password == "" or username =='admin':
-        print("Invalid team credentials.")
-        return
-      self.System.teams[username] = password
-      print("Team created")
+        return HttpResponse("Invalid team credentials.")
+      t = User(name=username, password=password, currentLandmark=0, game=self.Game)
+      t.save()
+      content = "team created"
+      return HttpResponse(content)
 
       
     def answer_question(self, answer, team):
@@ -175,6 +188,12 @@ class Controller:
           print('Incorrect answer, try again.')
                 # Eventually add penalty.
                 # if answer is correct: automatically provide next clue, increments currentLandmark if correct
+    #def createlandmarklist(self, gamename):
+     #   list = Landmarks.objects.filter(game = gamename)
+      #  newlist = sorted(list, )
+
+
+
 '''
 class TestAcceptanceLogin(unittest.TestCase):
     def setUp(self):
