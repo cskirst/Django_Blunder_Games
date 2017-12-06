@@ -1,6 +1,7 @@
 from django.test import TestCase
-'''
+
 from Interface.models import Game, Landmarks, User
+'''
 from .Interface import Interface
 from .controller import Controller
 '''
@@ -169,11 +170,13 @@ class TestSetClue(TestCase):
 
 class TestGetClue(TestCase):
     def setUp(self):
-        self.Landmark = landmarks.Landmarks("Central Park", "Near the dumpster", "What is the meaning of the universe?",
-                                  "The guy right behind you")
+        Game.objects.create(name="game1")
+        g1 = Game.objects.get(name="game1")
+        Landmarks.objects.create(name="landmark1", question="question1", clue="clue1", answer="answer1", position=0, game=g1)
 
     def test_getClue(self):
-        self.assertEqual(self.Landmark.getClue(), "Near the dumpster", "Clue is not correct")
+        landmark = Landmarks.objects.get(name="landmark1")
+        self.assertEqual(landmark.getClue(), "clue1", "Clue is not correct!")
 
 
 class TestGetQuestion(TestCase):
