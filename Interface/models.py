@@ -29,8 +29,7 @@ class User(models.Model):
         return self.password
     def get_status(self):
         # returns current time, location (penalties accounted for in later iteration)
-        # if gm
-        # implement gm total status sprint 2
+        # implement gm total status sprint 2 - can probably just call this for each team
         print("Stats for " + self.name)
         # print("Current time: %d", self.Game.clock)  # TODO: need to fix this line
         print("You are on landmark " + self.currentLandmark)  # Prints name of landmark
