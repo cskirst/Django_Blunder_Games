@@ -45,7 +45,7 @@ class Controller:
                 return "Bad user credentials"
             return self.create_team(parsedText[2], parsedText[3], parsedText[4])
           else:
-            print("Invalid command")
+            return("Invalid command")
         elif command == 'START':
           self.start_game()
         elif command == 'END':
@@ -111,8 +111,8 @@ class Controller:
     def create_game(self, name):
         # instantiates new game object and calls setLandmarkList & setTeams in Game class. Current user is admin
         if self.currentUser != "admin":
-            print("Cannot create game if not game maker")
-            return
+            return ("Cannot create game if not game maker")
+
         g = Game(name=name,isActive=False)
         g.save()
         self.Game=g
@@ -150,13 +150,13 @@ class Controller:
         if (self.currentUser == "admin"):
             if self.Game == None:
               self.Game = Game(self.System)
-              print("Game started")
+              return("Game started")
             if self.Game.isActive:
-              print("There is already an active game")
+              return("There is already an active game")
             else:
               self.Game.toggleActive()
         else:
-            print("Cannot start game if not game maker")
+            return("Cannot start game if not game maker")
 
     def end_game(self):
         # only accessible if game maker
@@ -185,7 +185,7 @@ class Controller:
 
     def create_team(self, username, password, gamename):
       if self.currentUser != "admin":
-          return "Must be admin to create landmark"
+          return "Must be admin to create a user"
       if username == "" or password == "" or username =='admin' or gamename=="":
         return "Invalid team credentials."
       try:
