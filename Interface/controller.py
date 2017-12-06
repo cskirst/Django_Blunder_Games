@@ -47,13 +47,13 @@ class Controller:
           else:
             return("Invalid command")
         elif command == 'START':
-          self.start_game()
+          return self.start_game(parsedText[2])
         elif command == 'END':
-          self.end_game()
+          return self.end_game(parsedText[2])
         #User calls
         elif command == 'ANSWER' and parsedText[1].upper() == 'QUESTION':
-          if self.Game==None:
-              return "There is no current game"
+          if self.Game.isActive == False:
+              return "Game is not active"
           j=2
           newAnswer = ""
           for i in range(2,(len(parsedText))):
@@ -68,20 +68,20 @@ class Controller:
             self.Game.toggleActive()
           '''
         elif command == 'GET' and parsedText[1].upper() == 'STATUS':
-          if self.Game==None:
-              return "There is no current game"
-          team.get_status()
+          if self.Game.isActive == False:
+              return "Game is not active"
+          #team.get_status()
         elif command == 'GET' and parsedText[1].upper() == 'CLUE':
-          if self.Game==None:
-              return "There is no current game"
+          if self.Game.isActive == False:
+              return "Game is not active"
           if len(self.LandmarkList) == userobj.currentLandmark:
               return "You have already won!"
           cl = getattr(userobj, 'currentLandmark')
           return(self.LandmarkList[cl].getClue())
 
         elif command == 'GET' and parsedText[1].upper() == 'QUESTION':
-          if self.Game==None:
-              return "There is no current game"
+          if self.Game.isActive == False:
+              return "Game is not active"
           if len(self.LandmarkList) == userobj.currentLandmark:
               return "You have already won!"
           cl = getattr(userobj, 'currentLandmark')
@@ -145,29 +145,37 @@ class Controller:
         
 
 
-    def start_game(self):
+    def start_game(self, name):
         # only accessible if game maker. This method calls startClock() in Game class
-        if (self.currentUser == "admin"):
-            if self.Game == None:
-              self.Game = Game(self.System)
-              return("Game started")
-            if self.Game.isActive:
-              return("There is already an active game")
-            else:
-              self.Game.toggleActive()
+        if self.currentUser != "admin":
+            return "Cannot start game if not game maker"
         else:
-            return("Cannot start game if not game maker")
+            try:
+                self.Game = Game.objects.get(name=name)
+                if self.Game.isActive:
+                    return "Game is already active!"
+                else:
+                    self.Game.toggleActive()
+                    self.Game.save()
+                    return "Game started!"
+            except Game.DoesNotExist:
+                return "Game not found"
 
-    def end_game(self):
+    def end_game(self, name):
         # only accessible if game maker
-        if (self.currentUser == "admin"):
-            if not self.Game.isActive:
-              return "There is no active game"
-            else:
-              self.Game.toggleActive()
-              return "Game ended"
+        if self.currentUser != "admin":
+            return "Cannot end a game unless game maker"
         else:
-            return "Cannot end game if not game maker"
+            try:
+                self.Game = Game.objects.get(name=name)
+                if self.Game.isActive == False:
+                    return "Game is already inactive!"
+                else:
+                    self.Game.toggleActive()
+                    self.Game.save()
+                    return "Game ended!"
+            except Game.DoesNotExist:
+                return "Game not found"
 
     def create_landmark(self, name, clue, question, answer, gamename, position):
         if self.currentUser != "admin":
