@@ -47,9 +47,13 @@ class Controller:
           else:
             return("Invalid command")
         elif command == 'START':
-          return self.start_game(parsedText[2])
+            if len(parsedText) != 3:
+                return "Invalid number of arguments!"
+            return self.start_game(parsedText[2])
         elif command == 'END':
-          return self.end_game(parsedText[2])
+            if len(parsedText) != 3:
+                return "Invalid number of arguments!"
+            return self.end_game(parsedText[2])
         #User calls
         elif command == 'ANSWER' and parsedText[1].upper() == 'QUESTION':
           if self.Game.isActive == False:
