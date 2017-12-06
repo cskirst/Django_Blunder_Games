@@ -65,16 +65,16 @@ class Controller:
             j+=1
           newAnswer = newAnswer.rstrip()
           return self.answer_question(newAnswer)
-          #if that answer is the last one, game ends they win
+          #if that answer is the last one, they're done and it prints the end message
           '''
           if team.currentLandmark > len(self.Game.landmarkList):
-            print('You win!')
+            print('Hunt complete!')
             self.Game.toggleActive()
           '''
         elif command == 'GET' and parsedText[1].upper() == 'STATUS':
           if self.Game.isActive == False:
               return "Game is not active"
-          #team.get_status()
+          team.get_status()
         elif command == 'GET' and parsedText[1].upper() == 'CLUE':
           if self.Game.isActive == False:
               return "Game is not active"
