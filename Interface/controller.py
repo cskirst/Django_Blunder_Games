@@ -60,7 +60,7 @@ class Controller:
             newAnswer += parsedText[j] + " "
             j+=1
           newAnswer = newAnswer.rstrip()
-          self.answer_question(newAnswer, team)
+          return self.answer_question(newAnswer)
           #if that answer is the last one, game ends they win
           '''
           if team.currentLandmark > len(self.Game.landmarkList):
@@ -74,12 +74,18 @@ class Controller:
         elif command == 'GET' and parsedText[1].upper() == 'CLUE':
           if self.Game==None:
               return "There is no current game"
-          return(self.LandmarkList[team.currentLandmark].getClue())
+          if len(self.LandmarkList) == userobj.currentLandmark:
+              return "You have already won!"
+          cl = getattr(userobj, 'currentLandmark')
+          return(self.LandmarkList[cl].getClue())
 
         elif command == 'GET' and parsedText[1].upper() == 'QUESTION':
           if self.Game==None:
               return "There is no current game"
-          return(self.Game.landmarkList[team.currentLandmark].getQuestion())
+          if len(self.LandmarkList) == userobj.currentLandmark:
+              return "You have already won!"
+          cl = getattr(userobj, 'currentLandmark')
+          return(self.LandmarkList[cl].getQuestion())
         else:
           return('Invalid command.')
         
@@ -172,7 +178,7 @@ class Controller:
             g = Game.objects.get(name=gamename)
         except Game.DoesNotExist:
             return "Game not found"
-        l = Landmarks(name=name, clue=clue, question=question, answer=answer,game=g, position=position)
+        l = Landmarks(name=name, clue=clue, question=question, answer=answer,game=g, position=int(position))
         l.save()
         self.LandmarkList.append(l)
         return "Landmark created"
@@ -191,17 +197,19 @@ class Controller:
       return "Team created"
 
       
-    def answer_question(self, answer, team):
-      if team != None:
-        if self.Game.landmarkList[team.currentLandmark].getAnswer() == answer:
-          print('Correct!')
-          team.currentLandmark += 1
+    def answer_question(self, answer):
+        userobj = User.objects.get(name=self.currentUser)
+        cl = getattr(userobj, 'currentLandmark')
+        if len(self.LandmarkList) == userobj.currentLandmark:
+            return "You have already won!"
+        if self.LandmarkList[cl].getAnswer() == answer:
+          userobj.currentLandmark+=1
+          userobj.save()
                 # need to be able to print the clue
-          if self.Game.checkIfWin(team.currentLandmark) == True:
+          if len(self.LandmarkList) == userobj.currentLandmark:
             return 'You win!'
           else:
-            print('Your next clue is: ')
-            print(self.Game.landmarkList[team.currentLandmark].getClue())
+            return ("Correct! Your next clue is: " + self.LandmarkList[cl+1].getClue())
         else:
           return "Incorrect answer, try again."
                 # Eventually add penalty.
@@ -209,7 +217,7 @@ class Controller:
     def createlandmarklist(self):
         if self.Game==None:
             return
-        list = Landmarks.objects.filter(game = self.Game.name).order_by('position')
+        list = Landmarks.objects.filter(game = self.Game).order_by('position')
         self.LandmarkList = list
         return
 
