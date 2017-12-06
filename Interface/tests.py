@@ -9,10 +9,23 @@ from .controller import Controller
 # Create your tests here.
 
 '''
+CreateGame - Chris
+StartGame - Derek
+EndGame - Derek
+CreateLandmark - Thomas
+CreateUser - David
+AnswerQuestion (and win game) - Thomas
+CreateLandmarkList - Chris
+Testing views? - Derek
+Acceptance Test Document - Thomas
+GetClue/GetQuestion - David
+'''
+
+'''
 CONTROLLER TESTS
 '''
 
-class TestGMCreateGame(TestCase):  # Chris Kirst tests
+class TestGMCreateGame(TestCase):
     def setUp(self):
         Game.objects.create(name="game1")
         Game.objects.create(name="game2")
@@ -29,7 +42,7 @@ class TestGMCreateGame(TestCase):  # Chris Kirst tests
         self.assertFalse(self.con.Game.isActive, "Game should not be active until started.")
 
 
-class TestGMAddLandmark(TestCase):  # Chris Kirst
+class TestGMAddLandmark(TestCase):
     def setUp(self):
         self.con = controller.Controller()
         self.con.currentUser = "admin"
