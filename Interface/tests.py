@@ -182,7 +182,7 @@ class TestAnswerQuestion(TestCase):
         #setattr(self.u1,"currentLandmark",1)
         self.controller1.answer_question("a1")
         #self.u1.currentLandmark = 1
-        self.assertEqual(self.controller1.answer_question("a2"), "You win!","Answering last question not registering win game.")
+        self.assertEqual(self.controller1.answer_question("a2"), "You finished!","Answering last question not registering win game.")
 
 class TestGetClue(TestCase):
     def setUp(self):
