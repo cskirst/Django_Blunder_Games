@@ -219,7 +219,7 @@ class Controller:
           userobj.save()
                 # need to be able to print the clue
           if len(self.LandmarkList) == userobj.currentLandmark:
-            return 'You win!'
+            return 'You finished!'
           else:
             return ("Correct! Your next clue is: " + self.LandmarkList[cl+1].getClue())
         else:
