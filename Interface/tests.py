@@ -7,14 +7,6 @@ from .controller import Controller
 '''
 
 # Create your tests here.
-class TestGetClue(TestCase):
-    def setUp(self):
-        Game.objects.create(name="game1")
-        g1 = Game.objects.get(name="game1")
-        Landmarks.objects.create(name="landmark1", question="question1", clue="clue1", answer="answer1", position=0, game=g1)
-
-    def test_getClue(self):
-        landmark = Landmarks.objects.get(name="landmark1")
 
 class TestStartGame(TestCase):
     def setUp(self):
@@ -84,7 +76,7 @@ class TestGMCreateGame(TestCase):
         self.assertTrue(self.con.Game.isActive, "Game should be active!")
 
 class TestCreateLandmarkList(TestCase):
-    def setup(self):
+    def setUp(self):
         Game.objects.create(name="game1")
         Game.objects.create(name="game2")
         g1 = Game.objects.get(name="game1")
@@ -97,45 +89,45 @@ class TestCreateLandmarkList(TestCase):
         self.con.Game = g1
         self.con.currentUser = User.objects.get(name="admin")
 
-    def TestLandmarkList(self):
+    def test_LandmarkList(self):
         l1 = Landmarks.objects.get(name="landmark1")
         self.con.createlandmarklist()
         self.assertEqual(len(self.con.LandmarkList), 1, "Landmark List not created correctly!")
         self.assertEqual(self.con.LandmarkList[0], l1, "Landmark List not correct!")
 
-    def TestBadLandmarkList(self):
+    def test_BadLandmarkList(self):
         l2 = Landmarks.objects.get(name="landmark2")
         self.con.createlandmarklist()
         self.assertNotEqual(self.con.LandmarkList[0], l2, "Landmark in Landmark List should be wrong!")
 
 
 class TestCreateLandmarkList(TestCase):
-    def setup(self):
+    def setUp(self):
         Game.objects.create(name="game1")
         Game.objects.create(name="game2")
         g1 = Game.objects.get(name="game1")
         g2 = Game.objects.get(name="game2")
-        Landmarks.objects.create(name="landmark2", question="question2", clue="clue2", answer="answer2", position=0,
-                                 game=g2)
-        Landmarks.objects.create(name="landmark1", question="question1", clue="clue1", answer="answer1", position=0,
-                                 game=g1)
+        Landmarks.objects.create(name="landmark2", question="question2", clue="clue2", answer="answer2", position=0,game=g2)
+        Landmarks.objects.create(name="landmark1", question="question1", clue="clue1", answer="answer1", position=0,game=g1)
+        self.l1 = Landmarks.objects.get(name="landmark1")
+        self.l2 = Landmarks.objects.get(name="landmark2")
         self.con = Controller()
         self.con.Game = g1
-        self.con.currentUser = User.objects.get(name="admin")
+        self.con.currentUser = "admin"
 
-    def TestLandmarkList(self):
-        l1 = Landmarks.objects.get(name="landmark1")
+    def test_LandmarkList(self):
+        #l1 = Landmarks.objects.get(name="landmark1")
         self.con.createlandmarklist()
         self.assertEqual(len(self.con.LandmarkList), 1, "Landmark List not created correctly!")
-        self.assertEqual(self.con.LandmarkList[0], l1, "Landmark List not correct!")
+        self.assertEqual(self.con.LandmarkList[0], self.l1, "Landmark List not correct!")
 
-    def TestBadLandmarkList(self):
-        l2 = Landmarks.objects.get(name="landmark2")
+    def test_BadLandmarkList(self):
+        #l2 = Landmarks.objects.get(name="landmark2")
         self.con.createlandmarklist()
-        self.assertNotEqual(self.con.LandmarkList[0], l2, "Landmark in Landmark List should be wrong!")
+        self.assertNotEqual(self.con.LandmarkList[0], self.l2, "Landmark in Landmark List should be wrong!")
 
 
-class CreateLandmark(TestCase):
+class TestCreateLandmark(TestCase):
     def setUp(self):
         Game.objects.create(name="game1")
         self.g1 = Game.objects.get(name="game1")
@@ -159,11 +151,10 @@ class CreateLandmark(TestCase):
 
     def test_badUserCreate(self):
         self.controller1.currentUser = self.u1
-        self.assertEqual(self.controller1.create_landmark("l1", "c1", "q1", "a1", self.g1, 0),
-                         "Must be admin to create landmark", "Must be admin to create")
+        self.assertEqual(self.controller1.create_landmark("l1", "c1", "q1", "a1", self.g1, 0),"Must be admin to create landmark", "Must be admin to create")
 
 
-class AnswerQuestion(TestCase):
+class TestAnswerQuestion(TestCase):
     def setUp(self):
         Game.objects.create(name="game1")
         self.g1 = Game.objects.get(name="game1")
@@ -192,6 +183,57 @@ class AnswerQuestion(TestCase):
         self.controller1.answer_question("a1")
         #self.u1.currentLandmark = 1
         self.assertEqual(self.controller1.answer_question("a2"), "You win!","Answering last question not registering win game.")
+
+class TestGetClue(TestCase):
+    def setUp(self):
+        game1 = Game.objects.create(name="game1")
+        User.objects.create(name= "u1", password="p1", currentLandmark=0, game=game1)
+        l1 = Landmarks.objects.create(name="name1", clue="clue1", question="question1", answer="answer1", position=0, game=game1)
+        l2 = Landmarks.objects.create(name="name2", clue="clue2", question="question2", answer="answer2", position=1, game=game1)
+        self.controller = Controller()
+        self.controller.LandmarkList = [l1, l2]
+
+    def test_clue(self):
+        landmark = Landmarks.objects.get(name="name1")
+        self.assertEqual(self.controller.LandmarkList[0].clue, landmark.clue, "Clue mismatch")
+
+    def test_getclue(self):
+        landmark = Landmarks.objects.get(name="name1")
+        self.assertEqual(self.controller.LandmarkList[0].getClue(), landmark.clue, "GetClue incorrect")
+
+
+class TestGetQuestion(TestCase):
+    def setUp(self):
+        game1 = Game.objects.create(name="game1")
+        User.objects.create(name= "u1", password="p1", currentLandmark=0, game=game1)
+        l1 = Landmarks.objects.create(name="name1", clue="clue1", question="question1", answer="answer1", position=0, game=game1)
+        l2 = Landmarks.objects.create(name="name2", clue="clue2", question="question2", answer="answer2", position=1, game=game1)
+        self.controller = Controller()
+        self.controller.LandmarkList = [l1, l2]
+
+    def test_question(self):
+        landmark = Landmarks.objects.get(name="name1")
+        self.assertEqual(self.controller.LandmarkList[0].question, landmark.question, "Clue mismatch")
+
+    def test_getquestion(self):
+        landmark = Landmarks.objects.get(name="name1")
+        self.assertEqual(self.controller.LandmarkList[0].getQuestion(), landmark.question, "GetClue incorrect")
+
+class TestCreateUser(TestCase):
+    def setUp(self):
+        self.game = Game.objects.create(name = "game1")
+        User.objects.create(name="u1", password="p1", currentLandmark=0, game=self.game)
+        self.u1 = User.objects.get(name="u1")
+        self.con = Controller()
+        self.con.currentUser = "admin"
+
+    def test_create_user_success(self):
+        self.assertEqual(self.u1.name, User.objects.get(name="u1").name)
+
+    def test_createUserCredFailure(self):
+        self.assertEqual("Invalid team credentials.", self.con.create_team("", "", self.game), "Team should not be created")
+
+
 '''
 CreateGame - Chris
 StartGame - Derek
