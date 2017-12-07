@@ -59,20 +59,20 @@ class Controller:
               return "Game is not active"
           team.get_status()
         elif command == 'GET' and parsedText[1].upper() == 'CLUE':
-          if self.Game.isActive == False:
-              return "Game is not active"
           if self.currentUser == "admin":
               return "No clue for admin user"
+          if self.Game.isActive == False:
+              return "Game is not active"
           if len(self.LandmarkList) == userobj.currentLandmark:
               return "You have already won!"
           cl = getattr(userobj, 'currentLandmark')
           return(self.LandmarkList[cl].getClue())
 
         elif command == 'GET' and parsedText[1].upper() == 'QUESTION':
-          if self.Game.isActive == False:
-              return "Game is not active"
           if self.currentUser == "admin":
               return "No question for admin user"
+          if self.Game.isActive == False:
+              return "Game is not active"
           if len(self.LandmarkList) == userobj.currentLandmark:
               return "You have already won!"
           cl = getattr(userobj, 'currentLandmark')
