@@ -1,13 +1,197 @@
 from django.test import TestCase
-
 from Interface.models import Game, Landmarks, User
+from .controller import Controller
 '''
 from .Interface import Interface
 from .controller import Controller
 '''
 
 # Create your tests here.
+class TestGetClue(TestCase):
+    def setUp(self):
+        Game.objects.create(name="game1")
+        g1 = Game.objects.get(name="game1")
+        Landmarks.objects.create(name="landmark1", question="question1", clue="clue1", answer="answer1", position=0, game=g1)
 
+    def test_getClue(self):
+        landmark = Landmarks.objects.get(name="landmark1")
+
+class TestStartGame(TestCase):
+    def setUp(self):
+        Game.objects.create(name="game1")
+        self.g1 = Game.objects.get(name="game1")
+        User.objects.create(name="user1", password="pass1", currentLandmark=0, game=self.g1)
+        u1 = User.objects.get(name="user1")
+        self.controller = Controller()
+        self.controller.currentUser = "user1"
+        self.controller.Game = self.g1
+    def test_beforeStart(self):
+        self.assertFalse(self.g1.isActive, "Game should be inactive before start")
+    def test_badStartGame(self):
+        self.controller.start_game("game1")
+        self.assertFalse(self.g1.isActive, "Game should not be toggled on non-admin user")
+    def test_normalStartGame(self):
+        self.controller.currentUser = "admin"
+        self.controller.start_game("game1")
+        self.assertTrue(self.controller.Game, "Game should be active after admin calls start game")
+
+class TestEndGame(TestCase):
+    def setUp(self):
+        Game.objects.create(name="game1", isActive=True)
+        self.g1 = Game.objects.get(name="game1")
+        Landmarks.objects.create(name="landmark1", question="question1", clue="clue1", answer="answer1", position=0,game=self.g1)
+        l1 = Landmarks.objects.get(name="landmark1")
+        Landmarks.objects.create(name="landmark2", question="question2", clue="clue2", answer="answer2", position=1,game=self.g1)
+        l2 = Landmarks.objects.get(name="landmark2")
+        User.objects.create(name="user1", password="pass1", currentLandmark=0, game=self.g1)
+        u1 = User.objects.get(name="user1")
+        self.controller = Controller()
+        self.controller.currentUser = "user1"
+        self.controller.Game = self.g1
+        self.controller.LandmarkList = [l1, l2]
+        self.g1.isActive = True
+    def test_beforeEnd(self):
+        self.assertTrue(self.g1.isActive, "Game should be active before calling end game")
+    def test_badEndGame(self):
+        self.controller.end_game("game1")
+        self.assertTrue(self.g1.isActive, "Game should still be active after non-admin user calls end game")
+    def test_normalEndGame(self):
+        self.controller.currentUser = "admin"
+        self.controller.end_game("game1")
+        self.assertFalse(self.controller.Game.isActive, "Game should be inactive after admin calls end game")
+
+class TestGMCreateGame(TestCase):
+    def setUp(self):
+        self.con = Controller()
+        Game.objects.create(name="game1")
+        g1 = Game.objects.get(name="game1")
+        self.con.currentUser = "admin"
+
+    def test_createGame(self):
+
+        print(self.con.create_game("game2"))
+        g2 = Game.objects.get(name="game2")
+        Landmarks.objects.create(name="landmark1", question="question1", clue="clue1", answer="answer1", position=0,game=g2)
+        User.objects.create(name="user1", password="pass1", currentLandmark=0, game=g2)
+        lm = Landmarks.objects.get(name="landmark1")
+        self.con.Game = g2
+        self.con.createlandmarklist()
+        self.assertEquals(len(self.con.LandmarkList), 1, "Assigned landmarks in game not correct")
+        self.assertEqual(self.con.LandmarkList[0], lm, "Landmark in Landmark List not correct!")
+        #FUTURE: self.assertEqual(self.con.Game.clock, 0, "Clock should not be started until Game maker initiates game")
+        self.assertFalse(self.con.Game.isActive, "Game should not be active until started.")
+        self.con.Game.toggleActive()
+        self.assertTrue(self.con.Game.isActive, "Game should be active!")
+
+class TestCreateLandmarkList(TestCase):
+    def setup(self):
+        Game.objects.create(name="game1")
+        Game.objects.create(name="game2")
+        g1 = Game.objects.get(name="game1")
+        g2 = Game.objects.get(name="game2")
+        Landmarks.objects.create(name="landmark2", question="question2", clue="clue2", answer="answer2", position=0,
+                                 game=g2)
+        Landmarks.objects.create(name="landmark1", question="question1", clue="clue1", answer="answer1", position=0,
+                                 game=g1)
+        self.con = Controller()
+        self.con.Game = g1
+        self.con.currentUser = User.objects.get(name="admin")
+
+    def TestLandmarkList(self):
+        l1 = Landmarks.objects.get(name="landmark1")
+        self.con.createlandmarklist()
+        self.assertEqual(len(self.con.LandmarkList), 1, "Landmark List not created correctly!")
+        self.assertEqual(self.con.LandmarkList[0], l1, "Landmark List not correct!")
+
+    def TestBadLandmarkList(self):
+        l2 = Landmarks.objects.get(name="landmark2")
+        self.con.createlandmarklist()
+        self.assertNotEqual(self.con.LandmarkList[0], l2, "Landmark in Landmark List should be wrong!")
+
+
+class TestCreateLandmarkList(TestCase):
+    def setup(self):
+        Game.objects.create(name="game1")
+        Game.objects.create(name="game2")
+        g1 = Game.objects.get(name="game1")
+        g2 = Game.objects.get(name="game2")
+        Landmarks.objects.create(name="landmark2", question="question2", clue="clue2", answer="answer2", position=0,
+                                 game=g2)
+        Landmarks.objects.create(name="landmark1", question="question1", clue="clue1", answer="answer1", position=0,
+                                 game=g1)
+        self.con = Controller()
+        self.con.Game = g1
+        self.con.currentUser = User.objects.get(name="admin")
+
+    def TestLandmarkList(self):
+        l1 = Landmarks.objects.get(name="landmark1")
+        self.con.createlandmarklist()
+        self.assertEqual(len(self.con.LandmarkList), 1, "Landmark List not created correctly!")
+        self.assertEqual(self.con.LandmarkList[0], l1, "Landmark List not correct!")
+
+    def TestBadLandmarkList(self):
+        l2 = Landmarks.objects.get(name="landmark2")
+        self.con.createlandmarklist()
+        self.assertNotEqual(self.con.LandmarkList[0], l2, "Landmark in Landmark List should be wrong!")
+
+
+class CreateLandmark(TestCase):
+    def setUp(self):
+        Game.objects.create(name="game1")
+        self.g1 = Game.objects.get(name="game1")
+        User.objects.create(name="admin", password="kittens", currentLandmark=0, game=self.g1)
+        self.a1 = User.objects.get(name="admin")
+        User.objects.create(name="u1", password="cats", currentLandmark=0, game=self.g1)
+        self.u1 = User.objects.get(name="u1")
+        self.list1 = []
+        self.controller1 = Controller()
+        self.controller1.currentUser = "admin"
+        self.controller1.Game = self.g1
+        self.controller1.LandmarkList = self.list1
+
+    def test_createLandmarkBadArgs(self):
+        self.assertEqual(self.controller1.check(["create", "landmark", "badlm1"], "admin"), "Bad landmark credentials","Create landmark not recognizing bad input")
+
+    def test_createLandmarkGood(self):
+        self.controller1.create_landmark("l1", "c1", "q1", "a1", self.g1, 0)
+        l1 = Landmarks.objects.get(name="l1")
+        self.assertEqual(l1.name, "l1","Incorrectly creating landmark")
+
+    def test_badUserCreate(self):
+        self.controller1.currentUser = self.u1
+        self.assertEqual(self.controller1.create_landmark("l1", "c1", "q1", "a1", self.g1, 0),
+                         "Must be admin to create landmark", "Must be admin to create")
+
+
+class AnswerQuestion(TestCase):
+    def setUp(self):
+        Game.objects.create(name="game1")
+        self.g1 = Game.objects.get(name="game1")
+        Landmarks.objects.create(name="l1", clue="c1", question="q1", answer="a1", game=self.g1, position=0)
+        Landmarks.objects.create(name="l2", clue="c2", question="q2", answer="a2", game=self.g1, position=1)
+        self.l1 = Landmarks.objects.get(name="l1")
+        self.l2 = Landmarks.objects.get(name="l2")
+        self.list1 = [self.l1, self.l2]
+        User.objects.create(name="u1", password="p1", currentLandmark=0, game=self.g1)
+        self.u1 = User.objects.get(name="u1")
+        self.controller1 = Controller()
+        self.controller1.currentUser = "u1"
+        self.controller1.Game = self.g1
+        self.controller1.LandmarkList = self.list1
+
+    def test_rightAnswer(self):
+        self.assertEqual(self.controller1.answer_question("a1"), "Correct! Your next clue is: c2", "Answer Question not working")
+
+    def test_incrementLandmark(self):
+        self.controller1.answer_question("a1")
+        desubaka = User.objects.get(name=self.controller1.currentUser)
+        self.assertEqual(desubaka.currentLandmark, 1, "Not incrementing users position")
+
+    def test_winGame(self):
+        #setattr(self.u1,"currentLandmark",1)
+        self.controller1.answer_question("a1")
+        #self.u1.currentLandmark = 1
+        self.assertEqual(self.controller1.answer_question("a2"), "You win!","Answering last question not registering win game.")
 '''
 CreateGame - Chris
 StartGame - Derek
@@ -21,294 +205,3 @@ Acceptance Test Document - Thomas
 GetClue/GetQuestion - David
 '''
 
-'''
-CONTROLLER TESTS
-'''
-
-class TestGMCreateGame(TestCase):
-    def setUp(self):
-        Game.objects.create(name="game1")
-        Game.objects.create(name="game2")
-
-    def test_createGame(self):
-        #listoflandmarks = "park,c,q,a"
-        #teamnames = "teamA,passwordA"#user.User
-        #realteam = user.User("teamA","passwordA")
-        #self.con.create_game(listoflandmarks, teamnames)
-        self.con.create_game("park","teamA")
-        self.assertEquals(len(self.con.Game.landmarkList), 1, "Assigned landmarks in game not correct")
-        self.assertEquals(len(self.con.Game.teams),1, "Assigned teams in game not correct")
-        #FUTURE: self.assertEqual(self.con.Game.clock, 0, "Clock should not be started until Game maker initiates game")
-        self.assertFalse(self.con.Game.isActive, "Game should not be active until started.")
-
-
-class TestGMAddLandmark(TestCase):
-    def setUp(self):
-        self.con = controller.Controller()
-        self.con.currentUser = "admin"
-
-    def test_AddLandMark(self):
-        self.con.create_landmark("park", "there are benches", "who is fountain dedicated to?", "St. Python")
-        landmark = self.con.System.getLandmark("park")
-        self.assertEquals(landmark.name, "park", "Landmark name is not correct")
-        self.assertEquals(landmark.clue, "there are benches", "Landmark question is not correct")
-        self.assertEquals(landmark.question, "who is fountain dedicated to?","Landmark question is not correct")
-        self.assertEquals(landmark.answer, "St. Python", "Landmark answer is not correct")
-
-    def test_AddBadLandmark(self):
-        self.con.create_landmark("", "", "", "")
-        self.assertEquals(len(self.con.System.landmarks), 0,"Adding blank landmark should fail")
-
-
-class LoginTest(TestCase):
-    def setUp(self):
-        self.con = controller.Controller()
-
-    def test_badlogin(self):
-        self.con.login("cheater", "sargreat")
-        self.assertEqual(self.con.currentUser, None, "Nice try, User scum. Bad username test.")
-        self.con.login("admin", "sarpoo")
-        self.assertEqual(self.con.currentUser, None, "Nice try, User scum. Bad password test.")
-
-    def test_goodlogin(self):
-        self.con.login("admin", "kittens")
-        self.assertEqual(self.con.currentUser, "admin", "Admin not successfully logged in.")
-
-
-class LogoutTest(TestCase):
-    def setUp(self):
-        self.con = controller.Controller()
-        self.con.username = "admin"
-
-    def test_goodlogout(self):
-        self.con.logout()
-        self.assertEqual(self.con.currentUser, None, "Current user should be null after logout")
-
-
-class TestStartGame(TestCase):
-    def setUp(self):
-        self.con = controller.Controller()
-        self.con.currentUser = "admin"
-        self.con.Game = game.Game(self.con.System)
-
-    def test_goodstart(self):
-        self.con.start_game()
-        self.assertTrue(self.con.Game.isActive, "Game not begun successfully!")
-
-    def test_badStart(self):
-        self.con.Game.isActive = True
-        self.con.start_game()
-        self.assertTrue(self.con.Game.isActive, "Calling start game on an active game should do nothing")
-
-
-class TestEndGame(TestCase):
-    def setUp(self):
-        self.con = controller.Controller()
-        self.con.currentUser = "admin"
-        self.con.Game = game.Game(self.con.System)
-        self.con.Game.isActive = True
-
-    def test_endGame(self):
-        self.con.end_game()
-        self.assertFalse(self.con.Game.isActive, "End game did not successfully stop the game")
-
-    def test_endGameOnAlreadyEndedGame(self):
-        self.con.Game.isActive = False
-        self.con.end_game()
-        self.assertFalse(self.con.Game.isActive, "End game on a non-active game should stay non-active")
-
-
-'''
-GAME TESTS
-'''
-
-
-class TestAddTeamsToGame(TestCase):  # Thomas
-    def setUp(self):
-        self.con = controller.Controller()
-        self.con.currentUser = "admin"
-        self.System = system.System()
-        self.Game = game.Game(self.con.System)
-        self.con.System.teams = {"username": "password", "TeamB": "otherpass", "TeamC": "Lincoln"}
-
-    def test_AddUser(self):
-        self.Game.addTeamToGame("TeamB", "bpass")
-        self.assertEquals(self.Game.teams[0].name, "TeamB", "TeamB should be first in currentTeams")
-        self.Game.addTeamToGame("TeamC", "cpass")
-        self.assertEquals(len(self.Game.teams), 2, "Should have two teams in the game")
-
-
-
-class TestGetLandmarkList(TestCase):
-    def setUp(self):
-        self.System = system.System()
-        self.Game = game.Game(self.System)
-        self.Game.landmarkList = ["Road", "Park"]
-
-    def test_normalGetLandmark(self):
-        self.assertEqual(self.Game.getLandmarkList(), ["Road", "Park"], "Return of getLandmarkList() not accurate")
-        self.Game.landmarkList = ["Apartment", "The Alamo"]
-        self.assertEqual(self.Game.getLandmarkList(), ["Apartment", "The Alamo"], "LandmarkList incorrect after change")
-
-    def test_emptyGetLandmark(self):
-        self.Game.landmarkList = []
-        self.assertEqual(self.Game.getLandmarkList(), [],
-                         "Call to getLandmarkList() when list is empty should return an empty list")
-
-
-class TestToggleActive(TestCase):
-    def setUp(self):
-        self.System = system.System()
-        self.Game = game.Game(self.System)
-
-    def test_normalToggle(self):
-        self.assertFalse(self.Game.isActive, "Game starting out active")
-        self.Game.toggleActive()
-        self.assertTrue(self.Game.isActive, "Game is not active after call to toggleActive()")
-
-
-'''
-LANDMARKS TESTS
-'''
-class TestSetClue(TestCase):
-    def setUp(self):
-        self.Landmark = landmarks.Landmarks("Central Park", "Near the dumpster", "What is the meaning of the universe?",
-                                  "The guy right behind you")
-
-    def test_normalSetClue(self):
-        self.assertEqual(self.Landmark.clue, "Near the dumpster", "Clue is incorrect to start")
-        self.Landmark.setClue("So many tests")
-        self.assertEqual(self.Landmark.clue, "So many tests", "Clue not changed on call to setClue()")
-
-
-class TestGetClue(TestCase):
-    def setUp(self):
-        Game.objects.create(name="game1")
-        g1 = Game.objects.get(name="game1")
-        Landmarks.objects.create(name="landmark1", question="question1", clue="clue1", answer="answer1", position=0, game=g1)
-
-    def test_getClue(self):
-        landmark = Landmarks.objects.get(name="landmark1")
-        self.assertEqual(landmark.getClue(), "clue1", "Clue is not correct!")
-
-
-class TestGetQuestion(TestCase):
-    def setUp(self):
-        self.Landmark = landmarks.Landmarks("Central Park", "Near the dumpster", "What is the meaning of the universe?",
-                                  "The guy right behind you")
-
-    def test_getQuestion(self):
-        self.assertEqual(self.Landmark.getQuestion(), "What is the meaning of the universe?",
-                         "GetQuestion() returns incorrect question")
-
-
-class TestSetQuestion(TestCase):
-    def setUp(self):
-        self.Landmark = landmarks.Landmarks("Central Park", "Near the dumpster", "What is the meaning of the universe?",
-                                  "The guy right behind you")
-
-    def test_normalSetQuestion(self):
-        self.Landmark.setQuestion("Who wrote the declaration of independence?")
-        self.assertEqual(self.Landmark.question, "Who wrote the declaration of independence?",
-                         "Question not set correctly after call to setQuestion()")
-
-
-class TestSetAnswer(TestCase):
-    def setUp(self):
-        self.Landmark = landmarks.Landmarks("Central Park", "Near the dumpster", "What is the meaning of the universe?",
-                                  "The guy right behind you")
-
-    def test_normalSetAnswer(self):
-        self.Landmark.setAnswer("Bologna")
-        self.assertEqual(self.Landmark.answer, "Bologna", "Answer not set correctly after call to setAnswer()")
-
-
-'''
-USER TESTS
-'''
-
-class TestAcceptanceQuestions(TestCase):
-    def setUp(self):
-        self.con = controller.Controller()
-        self.Interface = interface.Interface(self.con)
-        self.con.Game = game.Game(self.con.System)
-        self.system = system.System()
-        self.user = user.User("newuser","newpass")
-        self.con.currentUser = "newuser"
-        self.con.Game.teams.append(self.user)
-        # self.controller = controller.Controller()
-        river = landmarks.Landmarks("River", "test1", "test2", "test3")
-        tree = landmarks.Landmarks("Tree", "blah1", "blah2", "blah3")
-        self.system.landmarks = [tree, river]
-        self.con.Game.landmarkList = [river, tree]
-
-    def test_answer_question_correct(self):
-        self.user.currentLandmark = 0
-        self.Interface.command("ANSWER QUESTION test3")
-        self.assertEquals(self.user.currentLandmark, 1, "Current landmark not incremented after correct answer")
-
-    def test_answer_question_wrong(self):
-        self.user.currentLandmark = 0
-        self.Interface.command("ANSWER QUESTION badanswer")
-        self.assertEquals(self.user.currentLandmark, 0, "Current landmark was incremented after bad answer")
-
-'''
-class TestAcceptanceUserStatus(unittest.TestCase):
-    def setUp(self):
-        self.con = controller.Controller()
-        self.game = game.Game(self.con.System)
-        self.user = user.User("user","pass")
-
-    def test_userStatusCurrent(self):
-        self.game.isActive = True
-        self.game.clock = 5
-        self.user.currentLandmark = 1
-        self.assertEquals(self.user.get_status(), "Time: 5, Landmark: 2","User cannot access current status during game")
-'''
-
-
-class TestAcceptanceGMStatus(TestCase):  # TODO
-    def setup(self):
-        self.con = controller.Controller()
-        self.game = game.Game(self.con.System)
-
-    def test_gm_status_current(self):
-        pass
-
-
-'''
-suite = unittest.TestSuite()
-suite.addTest(unittest.makeSuite(TestGMCreateGame))
-suite.addTest(unittest.makeSuite(TestGMAddLandmark))
-suite.addTest(unittest.makeSuite(LoginTest))
-suite.addTest(unittest.makeSuite(LogoutTest))
-suite.addTest(unittest.makeSuite(TestStartGame))
-suite.addTest(unittest.makeSuite(TestEndGame))
-
-#Game tests
-suite.addTest(unittest.makeSuite(TestAddTeamsToGame))
-suite.addTest(unittest.makeSuite(TestGetLandmarkList))
-suite.addTest(unittest.makeSuite(TestToggleActive))
-
-#Landmarks tests
-suite.addTest(unittest.makeSuite(TestSetClue))
-suite.addTest(unittest.makeSuite(TestGetClue))
-suite.addTest(unittest.makeSuite(TestGetQuestion))
-suite.addTest(unittest.makeSuite(TestSetQuestion))
-suite.addTest(unittest.makeSuite(TestSetAnswer))
-
-#System tests
-suite.addTest(unittest.makeSuite(TestAddTeam))
-suite.addTest(unittest.makeSuite(TestAddTeamAcceptance))
-
-#User tests
-suite.addTest(unittest.makeSuite(TestAcceptanceQuestions))
-#suite.addTest(unittest.makeSuite(TestAcceptanceUserStatus))
-suite.addTest(unittest.makeSuite(TestAcceptanceGMStatus))
-
-runner = unittest.TextTestRunner()
-res = runner.run(suite)
-print(res)
-print("*" * 20)
-for i in res.failures: print(i[1])
-'''
