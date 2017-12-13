@@ -4,7 +4,7 @@ from django.urls import reverse
 import datetime
 from django.utils import timezone
 from Interface import Interface
-from .models import User, HuntCommand
+from .models import User, HuntCommand, Game
 
 
 def index(request):
@@ -21,8 +21,11 @@ def validate(request):
         if u.password != request.POST["password"]:
             message = "Invalid password"
     if message == "XXX":
-        context = {"User": request.POST["User"]}
-        return render(request,"terminal.html",context)
+        context = {"User": request.POST["User"], "Games": Game.objects.all()}
+        if u.name == 'admin':
+            return render(request,"terminal.html",context)
+        else:
+            return render(request, 'user.html', context)
     else:
         return render(request,"index.html",{"message":message})
 
@@ -36,3 +39,5 @@ def terminal(request):
     context = {"User":request.POST["User"],"output":output}
     return render(request, "terminal.html", context)
 
+def users(request):
+    return render(request, "user.html")

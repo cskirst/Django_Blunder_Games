@@ -1,16 +1,15 @@
 {% load staticfiles %}
 <link rel="stylesheet" type="text/css" href="{% static 'Interface/style.css' %}" />
 User: {{ User }}<br/>
-Output of last command: {{output}}
+
 <form method="post" action="/terminal/">{% csrf_token %}
-    Command: <input type="text" size="20" id="command" name="command"/><br/>
+    <input type="button" name="Create Game" id="creategame" /><br/>
+    <a href="user.html" target="pop" onclick="pop=window.open(this.href,'pop', 'width=650,height=400');">link</a>
     <input type="hidden" size="20" id="User" name="User" value="{{ User }}" /><br/>
     <input type="submit"/>
 
     <p></p>
 
-    <button name="command" type="submit" value="create game Game">Create Test Game</button>
-    <button name="command" type="submit" value="create landmark Name Clue Question Answer Game 1">Create Test Landmark</button>
 </form>
 <a href="/">log out</a>
 {{ message }}
