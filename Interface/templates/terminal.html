@@ -1,15 +1,62 @@
-{% load staticfiles %}
-<link rel="stylesheet" type="text/css" href="{% static 'Interface/style.css' %}" />
-User: {{ User }}<br/>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">
+    <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+</head>
+<style>
 
-<form method="post" action="/terminal/">{% csrf_token %}
-    <input type="button" name="Create Game" id="creategame" /><br/>
-    <a href="user.html" target="pop" onclick="pop=window.open(this.href,'pop', 'width=650,height=400');">link</a>
-    <input type="hidden" size="20" id="User" name="User" value="{{ User }}" /><br/>
-    <input type="submit"/>
+</style>
+<body>
 
-    <p></p>
+<div data-role="page">
+    <div data-role="header">
+        <h1>Welcome To Terminal</h1>
+    </div>
 
-</form>
-<a href="/">log out</a>
-{{ message }}
+    <div data-role="1" class="ui-content">
+
+        <div data-role="group1">
+        <a href="#myPopup" data-rel="popup" data-position-to="origin" name="ref1" class="ui-btn ui-shadow ui-corner-all">Create Game</a>
+        <a href="#myPopup2" data-rel="popup" data-position-to="origin" class="ui-btn ui-shadow ui-corner-all">Edit Games</a>
+        </div>
+
+        <div data-role="popup" id="myPopup" class="ui-content" data-overlay-theme="a" style="min-width:250px;">
+            <form method="post" action="/terminal/">
+                <div>
+                    <h3>Create Game</h3>
+                    <input type="hidden" name="prefix" value="create game">
+                    <input type="text" name="cgame" id="creategame" placeholder="Game Name">
+                    <input type="text" name="cgame" id="creategame" placeholder="Whatever this was">
+                    <input type="submit" value="Create Game">
+                </div>
+            </form>
+        </div>
+
+        <div data-role="popup" id="myPopup2" class="ui-content" data-overlay-theme="a" style="min-width:250px;">
+            <form method="post" action="/terminal/">
+                <div>
+                    <h3>Edit Games</h3>
+                    <p>To be continued.</p>
+                </div>
+            </form>
+        </div>
+
+    </div>
+
+    <div data-role="2" class="ui-content">
+        <a href="#myPopup3" data-rel="popup" class="ui-btn ui-btn-inline ui-corner-all btn-block">Landmark Stuff</a>
+
+        <div data-role="footer">
+            <h1>Logout Button Coming Soon</h1>
+        </div>
+    </div>
+
+</div>
+
+
+
+</body>
+</html>
