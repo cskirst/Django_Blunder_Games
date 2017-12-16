@@ -1,8 +1,21 @@
 {% load staticfiles %}
-<link rel="stylesheet" type="text/css" href="{% static 'Interface/style.css' %}" />
-<form method="post" action="/validate/">{% csrf_token %}
-    Name: <input type="text" size="20" id="User" name="User"/><br/>
-    Password: <input type="password" size="20" id="password" name="password"/><br/>
-    <input type="submit"/>
+<html>
+<head>
+<link href="{% static 'login.css' %}" rel="stylesheet" type="text/css" />
+</head>
+<form method="POST" action="/validate/" class="login-form"> {% csrf_token %}
+  <p class="login-text">
+    <span class="fa-stack fa-lg">
+      <i class="fa fa-circle fa-stack-2x"></i>
+      <i class="fa fa-lock fa-stack-1x"></i>
+    </span>
+  </p>
+  <input type="text" class="login-username" size="20" autofocus="true" required="true" placeholder="Username" id="User" name="User"/>
+  <input type="password" class="login-password" size="20" id="password" name="password" required="true" placeholder="Password" />
+  <input type="submit" name="Login" value="Login" class="login-submit" />
 </form>
-{{  message }}
+<div class="underlay-photo"></div>
+<div class="underlay-black"></div>
+{{ message }}
+
+</html>
