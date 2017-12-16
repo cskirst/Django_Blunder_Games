@@ -37,13 +37,22 @@ def terminal(request):
     #c.save()
     #output = i.process(request.POST["command"],request.POST["User"])
     username = request.GET.get('User',None)
+    #print("THE FIRST ELEMENT IS: " + request.GET.get('1'))
     prefix = request.GET.get('prefix',None)
     j=1
+    strin = prefix.split()
+    '''
     strin = prefix + " "
     print(strin)
     while request.GET.get(str(j)) != None:
         strin += request.GET.get(str(j)) + " "
         j += 1
+    '''
+    print(strin)
+    while request.GET.get(str(j)) != None:
+        strin.append(request.GET.get(str(j)))
+        j += 1
+    print(strin)
     i.process(strin, u)
     context = {"User":u}    #request.POST.get("User", "admin")
     return render(request, "terminal.html", context)

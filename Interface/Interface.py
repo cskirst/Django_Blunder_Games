@@ -7,5 +7,6 @@ class Interface:
 
     def process(self, s, user):
         if s is not None:
-            commandList = s.split()
-            return self.c.check(commandList, user)
+            #commandList = s.split()
+            print(s)
+            return self.c.check(s, user)

@@ -19,8 +19,9 @@
     <div data-role="games" class="ui-content">
 
         <div data-role="group1">
-        <a href="#myPopup" data-rel="popup" data-position-to="origin" name="ref1" class="ui-btn ui-shadow ui-corner-all">Create Game</a>
-        <a href="#myPopup2" data-rel="popup" data-position-to="origin" class="ui-btn ui-shadow ui-corner-all">Edit Games</a>
+            <a href="#myPopup" data-rel="popup" data-position-to="origin" name="ref1" class="ui-btn ui-shadow ui-corner-all">Create Game</a>
+            <a href="#myPopup2" data-rel="popup" data-position-to="origin" class="ui-btn ui-shadow ui-corner-all">Edit Games</a>
+            <a href="#startGame" data-rel="popup" data-position-to="origin" class="ui-btn ui-shadow ui-corner-all">Start Game</a>
         </div>
 
         <div data-role="popup" id="myPopup" class="ui-content" data-overlay-theme="a" style="min-width:250px;" data-history="False">
@@ -43,14 +44,63 @@
             </form>
         </div>
 
+        <div data-role="popup" id="startGame" class="ui-content" data-overlay-theme="a" style="min-width:250px;" data-history="False">
+            <form method="GET" action="/terminal/" > {% csrf_token %}
+                <div>
+                    <h3>Start Game</h3>
+                    <input type="hidden" name="prefix" value="start game" id="prefix">
+                    <input type="text" name="1" id="1" placeholder="Game Name">
+                    <input type="submit" value="Start Game">
+                </div>
+            </form>
+        </div>
+
+
+
     </div>
 
     <div data-role="landmarks" class="ui-content">
-        <a href="#myPopup3" data-rel="popup" class="ui-btn ui-btn-inline ui-corner-all btn-block">Landmark Stuff</a>
-
-        <div data-role="footer">
-            <h1>Logout Button Coming Soon</h1>
+        <div data-role="group2">
+            <a href="#myPopup3" data-rel="popup" data-position-to="origin" class="ui-btn ui-corner-all btn-block">Create Landmarks</a>
         </div>
+
+        <div data-role="popup" id="myPopup3" class="ui-content" data-overlay-theme="a" style="min-width:250px;" data-history="False">
+            <form method="GET" action="/terminal/"> {% csrf_token %}
+                <div>
+                    <h3>Create Landmarks</h3>
+                    <input type="hidden" name="prefix" value="create landmark" id="prefix">
+                    <input type="text" name="1" id="1" placeholder="Landmark Name">
+                    <input type="text" name="2" id="2" placeholder="Landmark Clue">
+                    <input type="text" name="3" id="3" placeholder="Landmark Question">
+                    <input type="text" name="4" id="4" placeholder="Landmark Answer">
+                    <input type="text" name="5" id="5" placeholder="Associated Game">
+                    <input type="text" name="6" id="6" pattern="\d" placeholder="Landmark Position">
+                    <input type="submit" value="Create Landmark">
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div data-role="users" class="ui-content">
+        <div data-role="group3">
+            <a href="#myPopup4" data-rel="popup" data-position-to="origin" class="ui-btn ui-corner-all btn-block">Create User</a>
+        </div>
+
+        <div data-role="popup" id="myPopup4" class="ui-content" data-overlay-theme="a" style="min-width:250px;" data-history="False">
+            <form method="GET" action="/terminal/">
+                <div>
+                    <h3>Create Users</h3>
+                    <input type="hidden" name="prefix" value="create user" id="prefix">
+                    <input type="text" name="1" id="1" placeholder="User's Name">
+                    <input type="text" name="2" id="2" placeholder="User's Password">
+                    <input type="text" name="3" id="3" placeholder="User's Associated Game">
+                    <input type="submit" value="Create User">
+                </div>
+            </form>
+        </div>
+    </div>
+    <div data-role="footer">
+        <h1>Logout Button Coming Soon</h1>
     </div>
 
 </div>
