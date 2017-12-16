@@ -23,19 +23,18 @@
         <a href="#myPopup2" data-rel="popup" data-position-to="origin" class="ui-btn ui-shadow ui-corner-all">Edit Games</a>
         </div>
 
-        <div data-role="popup" id="myPopup" class="ui-content" data-overlay-theme="a" style="min-width:250px;">
-            <form method="post" action="/terminal/">
+        <div data-role="popup" id="myPopup" class="ui-content" data-overlay-theme="a" style="min-width:250px;" data-history="False">
+            <form method="GET" action="/terminal/" > {% csrf_token %}
                 <div>
                     <h3>Create Game</h3>
-                    <input type="hidden" name="prefix" value="create game">
-                    <input type="text" name="cgame" id="creategame" placeholder="Game Name">
-                    <input type="text" name="cgame" id="creategame" placeholder="Whatever this was">
+                    <input type="hidden" name="prefix" value="create game" id="prefix">
+                    <input type="text" name="1" id="1" placeholder="Game Name">
                     <input type="submit" value="Create Game">
                 </div>
             </form>
         </div>
 
-        <div data-role="popup" id="myPopup2" class="ui-content" data-overlay-theme="a" style="min-width:250px;">
+        <div data-role="popup" id="myPopup2" class="ui-content" data-overlay-theme="a" style="min-width:250px;" data-history="False">
             <form method="post" action="/terminal/">
                 <div>
                     <h3>Edit Games</h3>

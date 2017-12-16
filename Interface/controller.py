@@ -13,7 +13,7 @@ class Controller:
         # if user=None, don't accept any method except login
         # elif tree of different methods depending on first index of parsedText
         # a = eval('A')
-        self.currentUser = user
+        self.currentUser = user.name
         command = parsedText[0].upper() # commands should be toUpper
         userobj = User.objects.get(name=self.currentUser)
         if self.currentUser != "admin":

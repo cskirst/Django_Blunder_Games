@@ -14,14 +14,14 @@ def validate(request):
 
     message = "XXX"
     try:
-        u = User.objects.get(name=request.POST["User"])
+        u = User.objects.get(name=request.GET["User"]) #POST
     except User.DoesNotExist:
-        message = "No user named " + request.POST["User"]
+        message = "No user named " + request.GET["User"]
     else:
-        if u.password != request.POST["password"]:
+        if u.password != request.GET["password"]:
             message = "Invalid password"
     if message == "XXX":
-        context = {"User": request.POST["User"], "Games": Game.objects.all()}
+        context = {"User": request.GET["User"], "Games": Game.objects.all()}
         if u.name == 'admin':
             return render(request,"terminal.html",context)
         else:
@@ -32,11 +32,20 @@ def validate(request):
 
 def terminal(request):
     i = Interface.Interface()
-    u = User.objects.get(name=request.POST["User"])
-    c = HuntCommand(text=request.POST["command"],user=u,timestamp=timezone.now())
-    c.save()
-    output = i.process(request.POST["command"],request.POST["User"])
-    context = {"User":request.POST["User"],"output":output}
+    u = User.objects.get(name=(request.POST.get("User", "admin"))) #u = request.GET.get("User", None)
+    #c = HuntCommand(text=request.POST["command"],user=u,timestamp=timezone.now())
+    #c.save()
+    #output = i.process(request.POST["command"],request.POST["User"])
+    username = request.GET.get('User',None)
+    prefix = request.GET.get('prefix',None)
+    j=1
+    strin = prefix + " "
+    print(strin)
+    while request.GET.get(str(j)) != None:
+        strin += request.GET.get(str(j)) + " "
+        j += 1
+    i.process(strin, u)
+    context = {"User":u}    #request.POST.get("User", "admin")
     return render(request, "terminal.html", context)
 
 def users(request):
