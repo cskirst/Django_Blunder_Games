@@ -54,6 +54,7 @@ class Landmarks(models.Model):
 
     class Meta:
         verbose_name_plural = "Landmarks"
+        ordering = ['position']
 
     def __str__(self):
         return self.name

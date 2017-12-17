@@ -4,7 +4,7 @@ from django.urls import reverse
 import datetime
 from django.utils import timezone
 from Interface import Interface
-from .models import User, HuntCommand, Game
+from .models import User, HuntCommand, Game, Landmarks
 
 
 def index(request):
@@ -15,16 +15,23 @@ def validate(request):
     message = "XXX"
     try:
         u = User.objects.get(name=request.GET["User"]) #POST
+
     except User.DoesNotExist:
         message = "No user named " + request.GET["User"]
     else:
         if u.password != request.GET["password"]:
             message = "Invalid password"
+    try:
+       l = Landmarks.objects.filter(game=u.game)#.order_by('position')
+       l = l.values()
+    except Landmarks.DoesNotExist:
+        message = "No landmarks"
     if message == "XXX":
-        context = {"User": request.GET["User"], "Games": Game.objects.all()}
+        context = {"User": request.GET["User"], "Games": Game.objects.all(), "curUser": u, "landList":l}
         if u.name == 'admin':
             return render(request,"terminal.html",context)
         else:
+            print(l)
             return render(request, 'user.html', context)
     else:
         return render(request,"index.html",{"message":message})
