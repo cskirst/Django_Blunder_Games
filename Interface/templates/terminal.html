@@ -5,6 +5,12 @@
     <link rel="stylesheet" href="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">
     <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
     <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+    <script type="text/javascript">
+  function closeSelf (f) {
+     f.submit()
+     window.close();
+  }
+</script>
 </head>
 <style>
 
@@ -24,8 +30,8 @@
             <a href="#startGame" data-rel="popup" data-position-to="origin" class="ui-btn ui-shadow ui-corner-all">Start Game</a>
         </div>
 
-        <div data-role="popup" id="myPopup" class="ui-content" data-overlay-theme="a" style="min-width:250px;" data-history="False">
-            <form method="GET" action="/terminal/" > {% csrf_token %}
+        <div data-role="popup" id="myPopup" class="ui-content" data-overlay-theme="a" style="min-width:250px;" data-history="false">
+            <form method="post" action="/terminal/" onsubmit="closeSelf(this);"> {% csrf_token %}
                 <div>
                     <h3>Create Game</h3>
                     <input type="hidden" name="prefix" value="create game" id="prefix">
@@ -35,8 +41,8 @@
             </form>
         </div>
 
-        <div data-role="popup" id="myPopup2" class="ui-content" data-overlay-theme="a" style="min-width:250px;" data-history="False">
-            <form method="post" action="/terminal/">
+        <div data-role="popup" id="myPopup2" class="ui-content" data-overlay-theme="a" style="min-width:250px;" data-history="false">
+            <form method="post" action="/terminal/" onsubmit="closeSelf(this);"> {% csrf_token %}
                 <div>
                     <h3>Edit Games</h3>
                     <p>To be continued.</p>
@@ -44,8 +50,8 @@
             </form>
         </div>
 
-        <div data-role="popup" id="startGame" class="ui-content" data-overlay-theme="a" style="min-width:250px;" data-history="False">
-            <form method="GET" action="/terminal/" > {% csrf_token %}
+        <div data-role="popup" id="startGame" class="ui-content" data-overlay-theme="a" style="min-width:250px;" data-history="false">
+            <form method="post" action="/terminal/" onsubmit="closeSelf(this);"> {% csrf_token %}
                 <div>
                     <h3>Start Game</h3>
                     <input type="hidden" name="prefix" value="start game" id="prefix">
@@ -69,8 +75,8 @@
             <a href="#myPopup3" data-rel="popup" data-position-to="origin" class="ui-btn ui-corner-all btn-block">Create Landmarks</a>
         </div>
 
-        <div data-role="popup" id="myPopup3" class="ui-content" data-overlay-theme="a" style="min-width:250px;" data-history="False">
-            <form method="GET" action="/terminal/"> {% csrf_token %}
+        <div data-role="popup" id="myPopup3" class="ui-content" data-overlay-theme="a" style="min-width:250px;" data-history="false">
+            <form method="post" action="/terminal/" onsubmit="closeSelf(this);"> {% csrf_token %}
                 <div>
                     <h3>Create Landmarks</h3>
                     <input type="hidden" name="prefix" value="create landmark" id="prefix">
@@ -93,12 +99,12 @@
     </div>
 
     <div data-role="users" class="ui-content">
-        <div data-role="group3">
+        <div data-role="group0">
             <a href="#myPopup4" data-rel="popup" data-position-to="origin" class="ui-btn ui-corner-all btn-block">Create User</a>
         </div>
 
-        <div data-role="popup" id="myPopup4" class="ui-content" data-overlay-theme="a" style="min-width:250px;" data-history="False">
-            <form method="GET" action="/terminal/">
+        <div data-role="popup" id="myPopup4" class="ui-content" data-overlay-theme="a" style="min-width:250px;" data-history="false">
+            <form method="post" action="/terminal/" onsubmit="closeSelf(this);"> {% csrf_token %}
                 <div>
                     <h3>Create Users</h3>
                     <input type="hidden" name="prefix" value="create user" id="prefix">

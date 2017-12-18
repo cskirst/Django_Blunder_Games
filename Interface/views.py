@@ -14,12 +14,12 @@ def validate(request):
 
     message = "XXX"
     try:
-        u = User.objects.get(name=request.GET["User"]) #POST
+        u = User.objects.get(name=request.POST["User"]) #POST
 
     except User.DoesNotExist:
-        message = "No user named " + request.GET["User"]
+        message = "No user named " + request.POST["User"]
     else:
-        if u.password != request.GET["password"]:
+        if u.password != request.POST["password"]:
             message = "Invalid password"
     try:
        l = Landmarks.objects.filter(game=u.game)#.order_by('position')
@@ -27,7 +27,7 @@ def validate(request):
     except Landmarks.DoesNotExist:
         message = "No landmarks"
     if message == "XXX":
-        context = {"User": request.GET["User"], "Games": Game.objects.all(), "curUser": u, "landList":l}
+        context = {"User": request.POST["User"], "Games": Game.objects.all(), "curUser": u, "landList":l}
         if u.name == 'admin':
             return render(request,"terminal.html",context)
         else:
@@ -39,30 +39,37 @@ def validate(request):
 
 def terminal(request):
     i = Interface.Interface()
-    u = User.objects.get(name=(request.POST.get("User", "admin"))) #u = request.GET.get("User", None)
-    #c = HuntCommand(text=request.POST["command"],user=u,timestamp=timezone.now())
-    #c.save()
-    #output = i.process(request.POST["command"],request.POST["User"])
-    username = request.GET.get('User',None)
-    #print("THE FIRST ELEMENT IS: " + request.GET.get('1'))
-    prefix = request.GET.get('prefix',None)
+    u = User.objects.get(name='admin')
+    #u = User.objects.get(name=(request.POST.get("User", 'admin'))) !!!!!!!!!!!!!!Don't supply with default value 'admin', needs rework
+    strin = request.POST.get('prefix').split()
     j=1
-    strin = prefix.split()
-    '''
-    strin = prefix + " "
-    print(strin)
-    while request.GET.get(str(j)) != None:
-        strin += request.GET.get(str(j)) + " "
+    while request.POST.get(str(j)) != None:
+        strin.append(request.POST.get(str(j)))
         j += 1
-    '''
-    print(strin)
-    while request.GET.get(str(j)) != None:
-        strin.append(request.GET.get(str(j)))
-        j += 1
-    print(strin)
     i.process(strin, u)
-    context = {"User":u}    #request.POST.get("User", "admin")
+    context = {"User": u}
     return render(request, "terminal.html", context)
 
-def users(request):
-    return render(request, "user.html")
+
+#WIP
+def user(request):
+    i = Interface.Interface()
+    passw = request.session['password']
+    u = User.objects.get(name=request.session['User'])#username)   request.POST.get("User")
+    user = request.session['User']
+    try:
+        l = Landmarks.objects.filter(game=u.game)#.order_by('position')
+        l = l.values()
+    except Landmarks.DoesNotExist:
+        print("WHY IS THERE NO LANDMARKS?????????????") #lol...
+        l=[]
+    #u = User.objects.get(name=(request.GET.get("User")))
+    prefix = request.POSTget('prefix')
+    j = 1
+    strin = prefix.split()
+    while request.POSTget(str(j)) != None:
+        strin.append(request.POSTget(str(j)))
+        j += 1
+    i.process(strin, u)
+    #context = {"User": u}
+    context = {"User": User, "Games": Game.objects.all(), "curUser": u, "landList": l}
