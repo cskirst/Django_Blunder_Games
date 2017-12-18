@@ -103,11 +103,14 @@ class Controller:
         # instantiates new game object and calls setLandmarkList & setTeams in Game class. Current user is admin
         if self.currentUser != "admin":
             return ("Cannot create game if not game maker")
-
-        g = Game(name=name,isActive=False)
-        g.save()
-        self.Game=g
-        return "Game created!"
+        try:
+            testGame = Game.objects.get(name=name)
+        except Game.DoesNotExist:
+            g = Game(name=name, isActive=False)
+            g.save()
+            self.Game = g
+            return "Game created"
+        return "Game with that name already exists"
         
 
 
@@ -166,9 +169,13 @@ class Controller:
         g = Game.objects.get(name=gamename)
       except Game.DoesNotExist:
         return "Game not found"
-      t = User(name=username, password=password, currentLandmark=0, game=g)
-      t.save()
-      return "Team created"
+      try:
+          testTeam = User.objects.get(name=username)
+      except User.DoesNotExist:
+          t = User(name=username, password=password, currentLandmark=0, game=g)
+          t.save()
+          return "Team created"
+      return "Team with that name already exists"
 
       
     def answer_question(self, answer):

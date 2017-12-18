@@ -5,7 +5,12 @@
     <link rel="stylesheet" href="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">
     <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
     <script src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
-
+    <script type="text/javascript">
+    function closeSelf (f) {
+     f.submit()
+     window.close();
+    }
+    </script>
 </head>
 <style>
 
@@ -20,14 +25,17 @@
 
         {% if curUser.game.isActive %}
             <h3> {{ curUser.game.name }} is active! </h3>
-            {% for lm in landList %}
-                {% if lm.position == curUser.currentLandmark %}
-                    <h3> You are at landmark {{ curUser.currentLandmark }} of {{ landList.count }}</h3>
-                    <h3> Your current landmark is: {{ lm.name }}</h3>
-                    <h3> Your current clue is: {{ lm.clue }}</h3>
+                {%  if landList.length == curUser.currentLandmark %}
+                    <h3> You have won. Congratulations!</h3>
+                {% else %}
+                    {% for lm in landList %}
+                        {% if lm.position == curUser.currentLandmark %}
+                            <h3> You are at landmark {{ curUser.currentLandmark }} of {{ landList.count }}</h3>
+                            <h3> Your current landmark is: {{ lm.name }}</h3>
+                            <h3> Your current clue is: {{ lm.clue }}</h3>
+                        {% endif %}
+                    {% endfor %}
                 {% endif %}
-            {% endfor %}
-
         {% else %}
             <h3> {{ curUser.game.name }} not started.</h3>
         {% endif %}
@@ -36,107 +44,48 @@
     <div data-role="games" class="ui-content">
 
         <div data-role="group1">
-            <a href="#myPopup" data-rel="popup" data-position-to="origin" name="ref1" class="ui-btn ui-shadow ui-corner-all">Get Clue</a>
-            <a href="#myPopup2" data-rel="popup" data-position-to="origin" class="ui-btn ui-shadow ui-corner-all">Get Question</a>
-            <a href="#startGame" data-rel="popup" data-position-to="origin" class="ui-btn ui-shadow ui-corner-all">Answer Question</a>
-        </div>
-
-        <div data-role="popup" id="myPopup" class="ui-content" data-overlay-theme="a" style="min-width:250px;" data-history="False">
-            <form method="GET" action="/user/" > {% csrf_token %}
-                <div>
-                    <h3>Create Game</h3>
-                    <input type="hidden" name="prefix" value="create game" id="prefix">
-                    <input type="text" name="1" id="1" placeholder="Game Name">
-                    <input type="submit" value="Create Game">
-                </div>
-            </form>
+            <a href="#myPopup2" data-rel="popup" data-transition="pop" data-position-to="origin" class="ui-btn ui-shadow ui-corner-all">Get Question</a>
+            <a href="#startGame" data-rel="popup" data-transition="pop" data-position-to="origin" class="ui-btn ui-shadow ui-corner-all">Answer Question</a>
+            <a href="#logout" data-rel="popup" data-transition="pop" data-position-to="origin" class="ui-btn ui-shadow ui-corner-all">Logout</a>
         </div>
 
         <div data-role="popup" id="myPopup2" class="ui-content" data-overlay-theme="a" style="min-width:250px;" data-history="False">
-            <form method="post" action="/user/">
+            <form method="post" action="{%  url 'user' %}" onsubmit="closeSelf(this);"> {% csrf_token %}
                 <div>
-                    <h3>Edit Games</h3>
-                    <p>To be continued.</p>
+                    <h3>Get Question</h3>
+                    <input type="hidden" name="User" value="{{ User }}" id="User"/>
+                     <input type="hidden" name="password" id="password" value={{ curUser.password }}>
+                    <input type="hidden" name="prefix" value="get question" id="prefix"/>
+                    <input type="submit" value="Get Question">
                 </div>
             </form>
         </div>
 
-        <div data-role="popup" id="startGame" class="ui-content" data-overlay-theme="a" style="min-width:250px;" data-history="False">
-            <form method="GET" action="/user/" > {% csrf_token %}
+        <div data-role="popup" id="startGame" class="ui-content" data-overlay-theme="a" style="min-width:250px;" data-history="True">
+            <form method="POST" onsubmit="closeSelf(this);" action={%  url 'user' %}> {% csrf_token %}
                 <div>
-                    <h3>Start Game</h3>
-                    <input type="hidden" name="prefix" value="start game" id="prefix">
-                    <select id="1" name="1">
-                        <option value="" disabled selected>Select Associated Game</option>
-                        {% for game in  Games%}
-                            <option value="{{ game }}">{{ game.name }}</option>
-                        {% endfor %}
-                    </select>
-                    <input type="submit" value="Start Game">
+                    <h3>Answer Question</h3>
+                    <input type="hidden" name="User" value="{{ User }}" id="User"/>
+                     <input type="hidden" name="password" id="password" value={{ curUser.password }}>
+                    <input type="hidden" name="prefix" value="answer question" id="prefix"/>
+                    <input type="text" name="1" id="1" placeholder="Answer to question"/>
+                    <input type="submit" value="Answer Question">
                 </div>
             </form>
         </div>
 
-
-
-    </div>
-
-    <div data-role="landmarks" class="ui-content">
-        <div data-role="group2">
-            <a href="#myPopup3" data-rel="popup" data-position-to="origin" class="ui-btn ui-corner-all btn-block">Create Landmarks</a>
-        </div>
-
-        <div data-role="popup" id="myPopup3" class="ui-content" data-overlay-theme="a" style="min-width:250px;" data-history="False">
-            <form method="GET" action="/user/"> {% csrf_token %}
+        <div data-role="popup" id="logout" class="ui-content" data-overlay-theme="a" style="min-width:250px;" data-history="True">
+            <form method="POST" onsubmit="closeSelf(this);" action={%  url 'login' %}> {% csrf_token %}
                 <div>
-                    <h3>Create Landmarks</h3>
-                    <input type="hidden" name="prefix" value="create landmark" id="prefix">
-                    <input type="text" name="1" id="1" placeholder="Landmark Name">
-                    <input type="text" name="2" id="2" placeholder="Landmark Clue">
-                    <input type="text" name="3" id="3" placeholder="Landmark Question">
-                    <input type="text" name="4" id="4" placeholder="Landmark Answer">
-                    <input type="text" name="5" id="5" placeholder="Associated Game">
-                    <select id="5" name="5">
-                        <option value="" disabled selected>Select Associated Game</option>
-                        {% for game in  Games%}
-                            <option value="{{ game }}">{{ game.name }}</option>
-                        {% endfor %}
-                    </select>
-                    <input type="text" name="6" id="6" pattern="\d" placeholder="Landmark Position">
-                    <input type="submit" value="Create Landmark">
+                    <h3>Are you sure you wish to logout?</h3>
+                    <input type="submit" value="Logout">
                 </div>
             </form>
         </div>
+
     </div>
 
-    <div data-role="users" class="ui-content">
-        <div data-role="group3">
-            <a href="#myPopup4" data-rel="popup" data-position-to="origin" class="ui-btn ui-corner-all btn-block">Create User</a>
-        </div>
-
-        <div data-role="popup" id="myPopup4" class="ui-content" data-overlay-theme="a" style="min-width:250px;" data-history="False">
-            <form method="GET" action="/user/">
-                <div>
-                    <h3>Create Users</h3>
-                    <input type="hidden" name="prefix" value="create user" id="prefix">
-                    <input type="text" name="1" id="1" placeholder="User's Name">
-                    <input type="text" name="2" id="2" placeholder="User's Password">
-                    <select id="3" name="3">
-                        <option value="" disabled selected>User's Associated Game</option>
-                        {% for game in  Games%}
-                            <option value="{{ game }}">{{ game.name }}</option>
-                        {% endfor %}
-                    </select>
-                    <input type="submit" value="Create User">
-                </div>
-            </form>
-        </div>
     </div>
-    <div data-role="footer">
-        <h1>Logout Button Coming Soon</h1>
-    </div>
-
-</div>
 
 
 

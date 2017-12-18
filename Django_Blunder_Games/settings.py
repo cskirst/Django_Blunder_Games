@@ -37,7 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'Interface.apps.InterfaceConfig',
+    'Interface'
+    #'Interface.apps.InterfaceConfig',
 ]
 
 MIDDLEWARE = [
@@ -55,7 +56,7 @@ ROOT_URLCONF = 'Django_Blunder_Games.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'Interface/../Interface/templates')]
+        'DIRS': [os.path.join(BASE_DIR, 'Interface/../Interface/templates'),]
         ,
         'APP_DIRS': True,
         'OPTIONS': {

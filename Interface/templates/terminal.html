@@ -28,6 +28,7 @@
             <a href="#myPopup" data-rel="popup" data-position-to="origin" name="ref1" class="ui-btn ui-shadow ui-corner-all">Create Game</a>
             <a href="#myPopup2" data-rel="popup" data-position-to="origin" class="ui-btn ui-shadow ui-corner-all">Edit Games</a>
             <a href="#startGame" data-rel="popup" data-position-to="origin" class="ui-btn ui-shadow ui-corner-all">Start Game</a>
+            <a href="#endGame" data-rel="popup" data-position-to="origin" class="ui-btn ui-shadow ui-corner-all">End Game</a>
         </div>
 
         <div data-role="popup" id="myPopup" class="ui-content" data-overlay-theme="a" style="min-width:250px;" data-history="false">
@@ -46,6 +47,22 @@
                 <div>
                     <h3>Edit Games</h3>
                     <p>To be continued.</p>
+                </div>
+            </form>
+        </div>
+
+        <div data-role="popup" id="endGame" class="ui-content" data-overlay-theme="a" style="min-width:250px;" data-history="false">
+            <form method="post" action="/terminal/" onsubmit="closeSelf(this);"> {% csrf_token %}
+                <div>
+                    <h3>End Game</h3>
+                    <input type="hidden" name="prefix" value="end game" id="prefix">
+                    <select id="1" name="1">
+                        <option value="" disabled selected>Select Associated Game</option>
+                        {% for game in  Games%}
+                            <option value="{{ game }}">{{ game.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <input type="submit" value="End Game">
                 </div>
             </form>
         </div>
@@ -84,10 +101,10 @@
                     <input type="text" name="2" id="2" placeholder="Landmark Clue">
                     <input type="text" name="3" id="3" placeholder="Landmark Question">
                     <input type="text" name="4" id="4" placeholder="Landmark Answer">
-                    <input type="text" name="5" id="5" placeholder="Associated Game">
+                    <!--<input type="text" name="5" id="5" placeholder="Associated Game">-->
                     <select id="5" name="5">
                         <option value="" disabled selected>Select Associated Game</option>
-                        {% for game in  Games%}
+                        {% for game in Games%}
                             <option value="{{ game }}">{{ game.name }}</option>
                         {% endfor %}
                     </select>
@@ -121,8 +138,22 @@
             </form>
         </div>
     </div>
-    <div data-role="footer">
-        <h1>Logout Button Coming Soon</h1>
+
+
+    <div data-role="games" class="ui-content">
+
+        <div data-role="group1">
+            <a href="#logout" data-rel="popup" data-transition="pop" data-position-to="origin" class="ui-btn ui-shadow ui-corner-all">Logout</a>
+        </div>
+
+        <div data-role="popup" id="logout" class="ui-content" data-overlay-theme="a" style="min-width:250px;" data-history="True">
+            <form method="POST" onsubmit="closeSelf(this);" action={%  url 'login' %}> {% csrf_token %}
+                <div>
+                    <h3>Are you sure you wish to logout?</h3>
+                    <input type="submit" value="Logout">
+                </div>
+            </form>
+        </div>
     </div>
 
 </div>
