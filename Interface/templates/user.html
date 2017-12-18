@@ -25,7 +25,7 @@
 
         {% if curUser.game.isActive %}
             <h3> {{ curUser.game.name }} is active! </h3>
-                {%  if landList.length == curUser.currentLandmark %}
+                {%  if landList.count == curUser.currentLandmark %}
                     <h3> You have won. Congratulations!</h3>
                 {% else %}
                     {% for lm in landList %}

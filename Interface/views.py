@@ -33,7 +33,8 @@ def validate(request):
         if u.name == 'admin':
             return render(request,"terminal.html",context)
         else:
-            print(l)
+            print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+            print(len(l))
             return render(request, 'user.html', context)
     else:
         return render(request,"index.html",{"message":message})
