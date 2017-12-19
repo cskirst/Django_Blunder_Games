@@ -32,17 +32,17 @@
 
         {% if curUser.game.isActive %}
             <h3> {{ curUser.game.name }} is active! </h3>
-                {%  if landList.count == curUser.currentLandmark %}
-                    <h3> You have won. Congratulations!</h3>
-                {% else %}
-                    {% for lm in landList %}
-                        {% if lm.position == curUser.currentLandmark %}
-                            <h3> You are at landmark {{ curUser.currentLandmark }} of {{ landList.count }}</h3>
-                            <h3> Your current landmark is: {{ lm.name }}</h3>
-                            <h3> Your current clue is: {{ lm.clue }}</h3>
-                        {% endif %}
-                    {% endfor %}
-                {% endif %}
+            {%  if currentLm is None %}
+                <h3> You have won. Congratulations!</h3>
+            {% else %}
+                {% for lm in landList %}
+                    {% if lm.position == curUser.currentLandmark %}
+                        <h3> You are at landmark {{ curUser.currentLandmark }} of {{ landList.count }}</h3>
+                        <h3> Your current landmark is: {{ lm.name }}</h3>
+                        <h3> Your current clue is: {{ lm.clue }}</h3>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
         {% else %}
             <h3> {{ curUser.game.name }} not started.</h3>
         {% endif %}
@@ -97,7 +97,7 @@
                 <div>
                     <h3>Reload page to display current stats</h3>
                     <input type="hidden" name="prefix" id="prefix" value="temp">
-                    <input type="submit">
+                    <input type="submit" value="Reload">
                 </div>
             </form>
         </div>

@@ -30,7 +30,9 @@ def validate(request):
             message = "Invalid password"
     try:
        l = Landmarks.objects.filter(game=u.game)#.order_by('position')
+       print(l)
        l = l.values()
+       print(l)
        curL = Landmarks.objects.get(game=u.game,position=u.currentLandmark)
     except Landmarks.DoesNotExist:
         #message = "No landmarks"
