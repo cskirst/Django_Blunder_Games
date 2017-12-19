@@ -32,7 +32,7 @@ def validate(request):
        l = l.values()
        curL = Landmarks.objects.get(position=u.currentLandmark)
     except Landmarks.DoesNotExist:
-        message = "No landmarks"
+        #message = "No landmarks"
         curL = None
     if message == "XXX":
         context = {"User": request.session.get('User'), "Games": Game.objects.all(), "curUser": u, "landList":l, "currentLm":curL}

@@ -23,5 +23,5 @@ urlpatterns = [
     url(r'^terminal/', views.terminal, name='terminal'),
     url(r'^validate/', views.validate, name="validate"),
     url(r'^user$', views.user, name="user"),
-    url(r'^sess$', views.sess, name="sess"),
+    url(r'^sess/', views.sess, name="sess"),
 ]

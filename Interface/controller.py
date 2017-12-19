@@ -104,8 +104,10 @@ class Controller:
         if self.currentUser != "admin":
             return ("Cannot create game if not game maker")
         try:
+            print(name)
             testGame = Game.objects.get(name=name)
         except Game.DoesNotExist:
+            print("here once")
             g = Game(name=name, isActive=False)
             g.save()
             self.Game = g
