@@ -3,6 +3,7 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 import datetime
 from django.utils import timezone
+from django.db import IntegrityError
 from Interface import Interface
 from .models import User, HuntCommand, Game, Landmarks
 
@@ -30,7 +31,7 @@ def validate(request):
     try:
        l = Landmarks.objects.filter(game=u.game)#.order_by('position')
        l = l.values()
-       curL = Landmarks.objects.get(position=u.currentLandmark)
+       curL = Landmarks.objects.get(game=u.game,position=u.currentLandmark)
     except Landmarks.DoesNotExist:
         #message = "No landmarks"
         curL = None
@@ -54,7 +55,10 @@ def terminal(request):
         strin.append(request.POST.get(str(j)))
         j += 1
     print(strin)
-    i.process(strin, u)
+    try:
+        i.process(strin, u)
+    except IntegrityError:
+        pass
     context = {"User": u, "Games": Game.objects.all()}
     return render(request, "terminal.html", context)
 
@@ -68,7 +72,7 @@ def user(request):
     try:
         l = Landmarks.objects.filter(game=u.game)#.order_by('position')
         l = l.values()
-        curL = Landmarks.objects.get(position=u.currentLandmark)
+        curL = Landmarks.objects.get(game=u.game,position=u.currentLandmark)
     except Landmarks.DoesNotExist:
         l=[]
         curL = None

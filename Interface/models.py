@@ -2,7 +2,7 @@ from django.db import models
 
 
 class Game(models.Model):
-    name = models.CharField(max_length=100, null=True)
+    name = models.CharField(max_length=100, null=True, unique=True)
     isActive = models.BooleanField(default=False)
 
     def __str__(self):
@@ -22,7 +22,7 @@ class Game(models.Model):
 
 
 class User(models.Model):
-    name = models.CharField(max_length=40)
+    name = models.CharField(max_length=40, unique=True)
     password = models.CharField(max_length=40)
     currentLandmark = models.IntegerField(default=0)
     game = models.ForeignKey(Game, null=True)
@@ -45,7 +45,7 @@ class User(models.Model):
 
 
 class Landmarks(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, unique=True)
     clue = models.CharField(max_length=1000)
     question = models.CharField(max_length=1000)
     answer = models.CharField(max_length=1000)
