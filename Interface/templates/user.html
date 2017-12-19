@@ -11,6 +11,13 @@
      window.close();
     }
     </script>
+    <script>
+    // When the user clicks on <div>, open the popup
+    function myFunction(f) {
+        alert("Question: {{ currentLm.question }}");
+        closeSelf(f);
+    }
+    </script>
 </head>
 <style>
 
@@ -47,10 +54,11 @@
             <a href="#myPopup2" data-rel="popup" data-transition="pop" data-position-to="origin" class="ui-btn ui-shadow ui-corner-all">Get Question</a>
             <a href="#startGame" data-rel="popup" data-transition="pop" data-position-to="origin" class="ui-btn ui-shadow ui-corner-all">Answer Question</a>
             <a href="#logout" data-rel="popup" data-transition="pop" data-position-to="origin" class="ui-btn ui-shadow ui-corner-all">Logout</a>
+            <a href="#reload" data-rel="popup" data-transition="pop" data-position-to="origin" class="ui-btn ui-shadow ui-corner-all">Reload Page</a>
         </div>
 
         <div data-role="popup" id="myPopup2" class="ui-content" data-overlay-theme="a" style="min-width:250px;" data-history="False">
-            <form method="post" action="{%  url 'user' %}" onsubmit="closeSelf(this);"> {% csrf_token %}
+            <form method="post" action="{%  url 'user' %}" onsubmit="myFunction(this);"> {% csrf_token %}
                 <div>
                     <h3>Get Question</h3>
                     <input type="hidden" name="User" value="{{ User }}" id="User"/>
@@ -60,6 +68,7 @@
                 </div>
             </form>
         </div>
+        <!--<div class="popup" onclick="myFunction()">Get Question<span class="popuptext" id="getQuestion">{{ currentLm.question }}</span> </div>-->
 
         <div data-role="popup" id="startGame" class="ui-content" data-overlay-theme="a" style="min-width:250px;" data-history="True">
             <form method="POST" onsubmit="closeSelf(this);" action={%  url 'user' %}> {% csrf_token %}
@@ -79,6 +88,16 @@
                 <div>
                     <h3>Are you sure you wish to logout?</h3>
                     <input type="submit" value="Logout">
+                </div>
+            </form>
+        </div>
+
+        <div data-role="popup" id="reload" class="ui-content" data-overlay-theme="a" style="min-width:250px;" data-history="True">
+            <form method="POST" onsubmit="closeSelf(this);" action={%  url 'user' %}> {% csrf_token %}
+                <div>
+                    <h3>Reload page to display current stats</h3>
+                    <input type="hidden" name="prefix" id="prefix" value="temp">
+                    <input type="submit">
                 </div>
             </form>
         </div>

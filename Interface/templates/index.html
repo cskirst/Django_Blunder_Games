@@ -3,7 +3,7 @@
 <head>
 <link href="{% static 'login.css' %}" rel="stylesheet" type="text/css" />
 </head>
-<form method="POST" action="/validate/" class="login-form"> {% csrf_token %}
+<form method="POST" action="{% url 'sess' %}" class="login-form"> {% csrf_token %}
   <p class="login-text">
     <span class="fa-stack fa-lg">
       <i class="fa fa-circle fa-stack-2x"></i>
